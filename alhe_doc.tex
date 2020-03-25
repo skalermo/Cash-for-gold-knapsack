@@ -1,0 +1,68 @@
+\documentclass[12pt,a4paper]{article}
+
+% for polish language
+\usepackage{polski}
+
+% for some math symbols
+\usepackage{amssymb}
+
+% correct footnotes placement
+\usepackage[bottom]{footmisc}
+
+% links
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=black
+}
+
+\title{Dokumentacja do projektu z ALHE}
+
+\author{Rafal Babinski \and Roman Moskalenko}
+\date{}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\pagebreak
+
+\section{Treść zadania}
+
+\textbf{SK.ALHE.4}\\
+
+Złodziej ukradł $X$ gramów złota ze skarbca i wraca do domu pociągiem. Żeby uniknąć schwytania przez policję, musi zamienić złoto na banknoty, więc postanawia sprzedać złoto pasażerom pociągu. 
+Zainteresowanych kupnem jest $N$ pasażerów, każdy z nich zgadza się kupić $a_{i}$, $i \in (1,2, ..., N)$ gramów złota za $v_{i}$, $i \in (1,2, ..., N)$. Złodziej chce uciec przed policją, jednocześnie maksymalizując zysk. 
+Zaimplementuj program bazujący na  algorytmie ewolucyjnym, który wskaże pasażerów, którym powinien sprzedać złoto oraz sumę wartości banknotów, którą zarobi. Zastosowanie i porównanie  z innym algorytmem będzie dodatkowym atutem przy ocenie projektu.
+
+\section{Projekt wstępny}
+
+\subsection{Założenia ogólne}
+
+Ewidentnie mamy do czynienia z problemem plecakowym. Zakładamy, że jest to problem dyskretny oraz że $a_{i}, v_{i} \in \mathbb{R}$.
+
+Preferowanym językiem programowania jest Python.
+
+\subsection{Planowane rozwiązanie}
+W ramach projektu planujemy porównać działanie trzech algorytmów:
+
+\begin{itemize}
+
+  \item \textbf{Prosty algorytm genetyczny} -- wersja algorytmu, w której odrzuca się rozwiązania nie spełniające dane ograniczenia problemu.
+
+  \item \textbf{Algorytm genetyczny zmodyfikowany} -- wersja algorytmu bazowana na \href{https://link.springer.com/content/pdf/10.1007/3-540-58495-1_14.pdf?fbclid=IwAR3zOJB97fsXeVpnsiBNckClxOR9lp2trFo8PZeYRx7GO-egrbTj4w8OVYw}{artykule}
+\footnote{\href{https://link.springer.com/content/pdf/10.1007/3-540-58495-1_14.pdf?fbclid=IwAR3zOJB97fsXeVpnsiBNckClxOR9lp2trFo8PZeYRx7GO-egrbTj4w8OVYw}{Zbigniew Michałewicz, Jarosław Arabas, \emph{Genetic Algorithms for the 0/1 Knapsack Problem}, 1994.}}. 
+Polega ona na poradzeniu sobie z rozwiązaniami niespełniającymi ograniczenia.
+Do tego zaimplementujemy dwie metody, które najlepiej się sprawdziły wg. wspomnianego artykułu: \emph{zastosowanie w funcji celu logarytmicznej funkcji kary} oraz \emph{zachłanne naprawianie rozwiązań} (do wyboru odpowiednio do pojemności plecaka).
+
+  \item \textbf{Branch-and-Bound} -- algorytm, który powinien zapewnić nam rozwiązanie optymalne. Znając rozwiązanie optymalne będziemy w staniedokładniej oszacować efektywność algorytmów genetycznych.
+  
+  
+\end{itemize}
+
+  
+
+\end{document}
