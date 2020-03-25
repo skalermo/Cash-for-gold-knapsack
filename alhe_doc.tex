@@ -42,7 +42,7 @@ Zaimplementuj program bazujący na  algorytmie ewolucyjnym, który wskaże pasa�
 
 \subsection{Założenia ogólne}
 
-Ewidentnie mamy do czynienia z problemem plecakowym. Zakładamy, że jest to problem dyskretny oraz że $a_{i}, v_{i} \in \mathbb{R}$.
+Ewidentnie mamy do czynienia z problemem plecakowym. Zakładamy, że jest to problem dyskretny oraz że $a_{i}, v_{i} \in \mathbb{R^+}$.
 
 Preferowanym językiem programowania jest Python.
 
@@ -60,8 +60,27 @@ Do tego zaimplementujemy dwie metody, które najlepiej się sprawdziły wg. wspo
 
   \item \textbf{Branch-and-Bound} -- algorytm, który powinien zapewnić nam rozwiązanie optymalne. Znając rozwiązanie optymalne będziemy w staniedokładniej oszacować efektywność algorytmów genetycznych.
   
-  
 \end{itemize}
+
+\pagebreak
+
+\subsection{Dane wejściowe}
+
+Na potrzeby eksperymentów dane wejśiowe będą generowane losowo.
+Wprowadzimy słabą korelację (tak jak opisano w artykule) między wagami a zyskami:
+
+\medskip
+$W[i] := (uniformly)$ random$([1..v])$
+
+$P[i] := W[i] + (uniformly)$ random$([-r..r])$, 
+\medskip
+
+gdzie \textbf{$W$} i \textbf{$P$} są wektorami wag oraz zysków odpowiednio, $v, r \in \mathbb{R^+}$.
+
+Jeśli, dla pewnych $i$, $P[i]\leq 0$, taka wartość zysku zostanie zignorowana i wylosowana ponownie, aż $P[i] > 0$.
+\medskip
+
+Także będzie możliwość podania przez użytkownika danych wejściowych jako plik.
 
   
 
