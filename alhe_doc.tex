@@ -9,6 +9,9 @@
 % correct footnotes placement
 \usepackage[bottom]{footmisc}
 
+% for \say command
+\usepackage{dirtytalk}
+
 % links
 \usepackage{hyperref}
 \hypersetup{
@@ -27,8 +30,6 @@
 \begin{document}
 
 \maketitle
-\tableofcontents
-\pagebreak
 
 \section{Treść zadania}
 
@@ -42,9 +43,15 @@ Zaimplementuj program bazujący na  algorytmie ewolucyjnym, który wskaże pasa�
 
 \subsection{Założenia ogólne}
 
-Ewidentnie mamy do czynienia z problemem plecakowym. Zakładamy, że jest to problem dyskretny oraz że $a_{i}, v_{i} \in \mathbb{R^+}$.
+Ewidentnie mamy do czynienia z problemem plecakowym zero-jedynkowym. Zakładamy, że $a_{i}, v_{i}, X \in \mathbb{R^+}$.
+
+W projekcie będziemy nawiązywać się do \href{https://link.springer.com/content/pdf/10.1007/3-540-58495-1_14.pdf?fbclid=IwAR3zOJB97fsXeVpnsiBNckClxOR9lp2trFo8PZeYRx7GO-egrbTj4w8OVYw}{artykułu}
+\footnote{\href{https://link.springer.com/content/pdf/10.1007/3-540-58495-1_14.pdf?fbclid=IwAR3zOJB97fsXeVpnsiBNckClxOR9lp2trFo8PZeYRx7GO-egrbTj4w8OVYw}{Zbigniew Michałewicz, Jarosław Arabas, \emph{Genetic Algorithms for the 0/1 Knapsack Problem}, 1994.}}, w którym badano efektywność algorytmów genetycznych dla problemu plecakowego zero-jedynkowego. Dalej będziemy odnosić się do niego po prostu jako \say{artykuł}.
 
 Preferowanym językiem programowania jest Python.
+
+\pagebreak
+
 
 \subsection{Planowane rozwiązanie}
 W ramach projektu planujemy porównać działanie trzech algorytmów:
@@ -53,8 +60,7 @@ W ramach projektu planujemy porównać działanie trzech algorytmów:
 
   \item \textbf{Prosty algorytm genetyczny} -- wersja algorytmu, w której odrzuca się rozwiązania nie spełniające dane ograniczenia problemu.
 
-  \item \textbf{Algorytm genetyczny zmodyfikowany} -- wersja algorytmu bazowana na \href{https://link.springer.com/content/pdf/10.1007/3-540-58495-1_14.pdf?fbclid=IwAR3zOJB97fsXeVpnsiBNckClxOR9lp2trFo8PZeYRx7GO-egrbTj4w8OVYw}{artykule}
-\footnote{\href{https://link.springer.com/content/pdf/10.1007/3-540-58495-1_14.pdf?fbclid=IwAR3zOJB97fsXeVpnsiBNckClxOR9lp2trFo8PZeYRx7GO-egrbTj4w8OVYw}{Zbigniew Michałewicz, Jarosław Arabas, \emph{Genetic Algorithms for the 0/1 Knapsack Problem}, 1994.}}. 
+  \item \textbf{Algorytm genetyczny zmodyfikowany} -- wersja algorytmu bazowana na artykule. 
 Polega ona na poradzeniu sobie z rozwiązaniami niespełniającymi ograniczenia.
 Do tego zaimplementujemy dwie metody, które najlepiej się sprawdziły wg. wspomnianego artykułu: \emph{zastosowanie w funcji celu logarytmicznej funkcji kary} oraz \emph{zachłanne naprawianie rozwiązań} (do wyboru odpowiednio do pojemności plecaka).
 
@@ -62,26 +68,23 @@ Do tego zaimplementujemy dwie metody, które najlepiej się sprawdziły wg. wspo
   
 \end{itemize}
 
-\pagebreak
+%\subsection{Dane wejściowe}
 
-\subsection{Dane wejściowe}
+%Na potrzeby eksperymentów dane wejśiowe będą generowane losowo.
+%Wprowadzimy słabą korelację (tak jak opisano w artykule) między wagami a zyskami:
 
-Na potrzeby eksperymentów dane wejśiowe będą generowane losowo.
-Wprowadzimy słabą korelację (tak jak opisano w artykule) między wagami a zyskami:
+%\medskip
+%$W[i] := (uniformly)$ random$([1..v])$
 
-\medskip
-$W[i] := (uniformly)$ random$([1..v])$
+%$P[i] := W[i] + (uniformly)$ random$([-r..r])$, 
+%\medskip
 
-$P[i] := W[i] + (uniformly)$ random$([-r..r])$, 
-\medskip
+%gdzie \textbf{$W$} i \textbf{$P$} są wektorami wag oraz zysków odpowiednio, $v, r \in \mathbb{R^+}$.
 
-gdzie \textbf{$W$} i \textbf{$P$} są wektorami wag oraz zysków odpowiednio, $v, r \in \mathbb{R^+}$.
+%Jeśli, dla pewnych $i$, $P[i]\leq 0$, taka wartość zysku zostanie zignorowana i wylosowana ponownie, aż $P[i] > 0$.
+%\medskip
 
-Jeśli, dla pewnych $i$, $P[i]\leq 0$, taka wartość zysku zostanie zignorowana i wylosowana ponownie, aż $P[i] > 0$.
-\medskip
-
-Także będzie możliwość podania przez użytkownika danych wejściowych jako plik.
-
+%Także będzie możliwość podania przez użytkownika danych wejściowych jako plik.
   
 
 \end{document}
