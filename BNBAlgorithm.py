@@ -11,17 +11,23 @@ class Item:
 
 
 class Node:
-    def __init__(self, l, p, w, b):
+    def __init__(self, l, p, w, b, i=set()):
         self.level = l
         self.profit = p
         self.bound = b
         self.weight = w
+        self.items = i
 
     def copy(self):
-        return Node(self.level, self.profit, self.weight, self.bound)
+        return Node(self.level, self.profit, self.weight, self.bound, self.items)
 
     def __str__(self):
-        return '{}|{}|{}|{}'.format(self.level, self.profit, self.weight, self.bound)
+        s = '{}|{}|{}|{}\n['.format(self.level, self.profit, self.weight,
+                                        self.bound, self.items)
+        for i in self.items:
+            s+=str(i)+" "
+
+        return s+"]"
 
 
 def bound(u: Node, n, W, arr):
@@ -51,12 +57,11 @@ def knapsack(W, arr, n):
 
     u = Node(l=-1, p=0, w=0.0, b=0)
     v = Node(None, None, None, None)
-    Q.put((u, -1))
+    Q.put(u)
 
-    max_profit = 0
+    max_node = u
     while not Q.empty():
-        u, node = Q.get()
-        print(u, node)
+        u = Q.get()
 
         if u.level == -1:
            v.level = 0
@@ -69,21 +74,25 @@ def knapsack(W, arr, n):
         v.weight = u.weight + arr[v.level].weight
         v.profit = u.profit + arr[v.level].value
 
-        if v.weight <= W and v.profit > max_profit:
-            max_profit = v.profit
+        if v.weight <= W and v.profit > max_node.profit:
+            max_node = v.copy()
 
         v.bound = bound(v, n, W, arr)
 
-        if v.bound > max_profit:
-            Q.put((v.copy(), arr[v.level]))
+        if v.bound > max_node.profit:
+            c = v.copy()
+            c.items.add(arr[v.level])
+            Q.put(c)
 
         v.weight = u.weight
         v.profit = u.profit
         v.bound = bound(v, n, W, arr)
-        if v.bound > max_profit:
-            Q.put((v.copy(), arr[v.level]))
 
-    return max_profit
+        if v.bound > max_node.profit:
+            c = v.copy()
+            Q.put(c)
+
+    return max_node
 
 
 W = 10
