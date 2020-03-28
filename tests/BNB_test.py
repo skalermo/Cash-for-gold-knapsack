@@ -8,10 +8,16 @@ class BNBTesting(unittest.TestCase):
         if not all([capacity, weights, profits, optimal]):
             return
 
+        # Items from weights and profits
         items = [Item(w, p) for (w, p) in zip(weights, profits)]
+
+        # Optimal selection
         result = [items[i] for i in range(len(optimal)) if optimal[i] == 1]
+
+        # Max profit from optimal selection
         max_profit = sum(i.value for i in result)
 
+        # Run algorithm
         n = knapsack(capacity, items, len(items))
 
         self.assertEqual(max_profit, n.profit, "Wrong profit")
