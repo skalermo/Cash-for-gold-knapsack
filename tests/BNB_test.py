@@ -57,32 +57,32 @@ class BNBTesting(unittest.TestCase):
         self.test(capacity, weights, profits, optimal)
 
     def test_P04(self):
-        capacity= 50
-        weights = [31, 10, 20, 19, 4, 3, 6]
+        capacity = 50
+        weights = [31, 10, 20, 19, 4, 3,  6]
         profits = [70, 20, 39, 37, 7, 5, 10]
-        optimal = [1, 0, 0, 1, 0, 0, 0]
+        optimal = [ 1,  0,  0,  1, 0, 0,  0]
 
         self.test(capacity, weights, profits, optimal)
 
     def test_P05(self):
-        capacity= 104
-        weights = [25, 35, 45, 5, 25, 3, 2, 2]
+        capacity = 104
+        weights = [ 25,  35,  45,  5, 25, 3, 2, 2]
         profits = [350, 400, 450, 20, 70, 8, 5, 5]
-        optimal = [1, 0, 1, 1, 1, 0, 1, 1]
+        optimal = [  1,   0,   1,  1,  1, 0, 1, 1]
 
         self.test(capacity, weights, profits, optimal)
 
     def test_P06(self):
         capacity = 170
-        weights = [41, 50, 49, 59, 55, 57, 60]
+        weights = [ 41,  50,  49,  59,  55,  57,  60]
         profits = [442, 525, 511, 593, 546, 564, 617]
-        optimal = [0, 1, 0, 1, 0, 0, 1]
+        optimal = [  0,   1,   0,   1,   0,   0,   1]
 
         self.test(capacity, weights, profits, optimal)
 
     def test_P07(self):
         capacity = 750
-        weights = [70, 73, 77, 80, 82, 87, 90, 94, 98, 106, 110, 113, 115, 118, 120]
+        weights = [ 70,  73,  77,  80,  82,  87,  90,  94,  98, 106, 110, 113, 115, 118, 120]
         profits = [135, 139, 149, 150, 156, 163, 173, 184, 192, 201, 210, 214, 221, 229, 240]
         optimal = [1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1]
 
