@@ -1,5 +1,4 @@
 import numpy as np
-import random
 
 
 def gen_data(n: int = 10,
@@ -85,10 +84,8 @@ def _gen_correlated_uniform_data(n: int, sx: float, sy: float, corr_coef: float)
     X = np.hstack([np.random.uniform(size=n),
                    np.random.uniform(low=0, high=t, size=round(t * n)),
                    np.random.uniform(low=1-t, high=1, size=round(t * n))])
+    Y = np.random.uniform(size=n+2*round(t*n))
 
-    Y = np.hstack([np.random.uniform(size=n),
-                   np.random.uniform(low=0, high=t, size=round(t * n)),
-                   np.random.uniform(low=1-t, high=1, size=round(t * n))])
     points = np.array([X, Y])
 
     # scale by (sqrt(2), t*sqrt(2))
@@ -123,9 +120,9 @@ def _gen_correlated_uniform_data(n: int, sx: float, sy: float, corr_coef: float)
 
 def __adjustment_function(x):
     """
-    Magick function based on Lagrange interpolation.
+    Magick function calculated using Lagrange interpolation.
     Adjusts correlation coefficient.
     """
-    return 843.491 * x ** 9 - 3747.36 * x ** 8 + 6991.44 * x ** 7 - \
-        7112.28 * x ** 6 + 4290.12 * x ** 5 - 1566.84 * x ** 4 +\
-        342.07 * x ** 3 - 43.6857 * x ** 2 + 4.04011 * x
+    return 2093.85 * x**9 - 9417.48 * x**8 + 17774 * x**7\
+        - 18291 * x**6 + 11172.7 * x**5 - 4138.6 * x**4\
+        + 913.458 * x**3 - 113.754 * x**2 + 7.73475 * x + 0.0583161
