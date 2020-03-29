@@ -38,12 +38,12 @@ class TestGenerator(TestCase):
         self.assertTrue(all([(0 < w <= w_cap) & (0 < p <= w_cap) for w, p in zip(data['weights'], data['profits'])]))
 
     def test_gen_data_strong_corr(self):
-        # test if correlation of 1 equals real correlation (up to 3 decimal places)
+        # test if correlation of 1 equals real correlation (up to 2 decimal places)
 
         n = np.random.randint(100, 200)
         w_cap = np.random.randint(50, 100)
         data = gen_data(n=n, w_cap=w_cap, correlation=1.0)
-        self.assertAlmostEqual(1, np.corrcoef(data['weights'], data['profits'])[0, 1], places=3)
+        self.assertAlmostEqual(1, np.corrcoef(data['weights'], data['profits'])[0, 1], places=2)
 
     def test_gen_data_explicit_capacity(self):
         # test explicit capacity behavior
@@ -69,24 +69,37 @@ class TestGenerator(TestCase):
         self.assertEqual(0.5*sum(data['weights']), data['capacity'])
 
     def test_gen_data_corr(self):
-        # test if correlation error is less than 0.2
+        # test if correlation error derivation is less than 0.1
 
-        n = np.random.randint(100, 200)
-        w_cap = np.random.randint(50, 100)
-        correlation = 0.4
-        data = gen_data(n=n, w_cap=w_cap, correlation=correlation)
-        self.assertTrue(0.2 < np.corrcoef(data['weights'], data['profits'])[0, 1] < 0.6)
+        tolerated_error = 0.1
+        check_correlation_error_derivation(self, tolerated_error, [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8])
 
     def test_gen_correlated_uniform_data_avg_error(self):
-        # test average correlation error
+        # test correlation error mean
 
-        N = 1000
-        tolerated_avg_error = 0.05
-        for test_corr_coef in (0.25, 0.5, 0.75):
-            error_sum = 0.0
-            for _ in range(N):
-                np.random.seed(datetime.now().microsecond)
-                _, _, coef = _gen_correlated_uniform_data(1000, 100, 100, test_corr_coef)
-                error_sum += abs(coef - test_corr_coef)
-            # print(error_sum/N)
-            self.assertTrue(error_sum/N < tolerated_avg_error)
+        tolerated_error = 0.05
+        check_correlation_error_mean(self, tolerated_error, [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9])
+
+
+def check_correlation_error_derivation(test_generator: TestGenerator, tolerated_derivation_error: float, corrs: list):
+    N = 1000
+    for test_corr_coef in corrs:
+        for _ in range(N):
+            np.random.seed(datetime.now().microsecond)
+            w_cap = np.random.randint(50, 100)
+            data = gen_data(n=200, w_cap=w_cap, correlation=test_corr_coef)
+            test_generator.assertTrue(
+                test_corr_coef - tolerated_derivation_error <
+                np.corrcoef(data['weights'], data['profits'])[0, 1] < test_corr_coef + tolerated_derivation_error)
+
+
+def check_correlation_error_mean(test_generator: TestGenerator, tolerated_avg_error: float, corrs: list):
+    N = 1000
+    for test_corr_coef in corrs:
+        error_sum = 0.0
+        for _ in range(N):
+            np.random.seed(datetime.now().microsecond)
+            _, _, coef = _gen_correlated_uniform_data(1000, 100, 100, test_corr_coef)
+            error_sum += abs(coef - test_corr_coef)
+        # print(error_sum / N)
+        test_generator.assertTrue(error_sum / N < tolerated_avg_error)
