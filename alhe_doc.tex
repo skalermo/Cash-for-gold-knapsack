@@ -12,6 +12,9 @@
 % for \say command
 \usepackage{dirtytalk}
 
+% change title of the bibliography
+\def\bibname{Referencje}\let\refname\bibname
+
 % links
 \usepackage{hyperref}
 \hypersetup{
@@ -21,6 +24,10 @@
     linkcolor=black,
     urlcolor=black
 }
+
+% image displaying
+\usepackage{subcaption}
+\usepackage{graphicx}
 
 \title{Dokumentacja do projektu z ALHE}
 
@@ -45,8 +52,7 @@ Zaimplementuj program bazujący na  algorytmie ewolucyjnym, który wskaże pasa�
 
 Ewidentnie mamy do czynienia z problemem plecakowym zero-jedynkowym. Zakładamy, że $a_{i}, v_{i}, X \in \mathbb{R^+}$.
 
-W projekcie będziemy nawiązywać się do \href{https://link.springer.com/content/pdf/10.1007/3-540-58495-1_14.pdf?fbclid=IwAR3zOJB97fsXeVpnsiBNckClxOR9lp2trFo8PZeYRx7GO-egrbTj4w8OVYw}{artykułu}
-\footnote{\href{https://link.springer.com/content/pdf/10.1007/3-540-58495-1_14.pdf?fbclid=IwAR3zOJB97fsXeVpnsiBNckClxOR9lp2trFo8PZeYRx7GO-egrbTj4w8OVYw}{Zbigniew Michałewicz, Jarosław Arabas, \emph{Genetic Algorithms for the 0/1 Knapsack Problem}, 1994.}}, w którym badano efektywność algorytmów genetycznych dla problemu plecakowego zero-jedynkowego. Dalej będziemy odnosić się do niego po prostu jako \say{artykuł}.
+W projekcie będziemy nawiązywać się do artykułu\cite{knapsack}, w którym badano efektywność algorytmów genetycznych dla problemu plecakowego zero-jedynkowego. Dalej będziemy odnosić się do niego po prostu jako \say{artykuł}.
 
 Preferowanym językiem programowania jest Python.
 
@@ -70,6 +76,84 @@ Do tego zaimplementujemy dwie metody, które najlepiej się sprawdziły wg. wspo
 
 Oczekujemy, że zmodyfikowana wersja algorytmu genetycznego okaże się efektywniejsza niż wersja prosta.
 
+\section{Realizacja projektu}
+
+\subsection{Generowane danych testowych}
+
+Na potrzeby projektu generowano instancje problemu plecakowego w sposób opisany w artykule.
+
+\subsubsection{Korelacja}
+
+Rozróżnia się instancje, gdzie wagi i  zyski są: 
+\begin{itemize}
+  \item nieskorelowane -- współczynnik korelacji w przybliżeniu równy 0,
+  \item skorelowane słabo -- współczynnik korelacji w przedziale (0, 1),
+  \item skorelowane mocno -- współczynnik korelacji równy 1.
+\end{itemize}
+
+Większa korelacja, jak wspomniano w artykule, implikuje większą trudność problemu.
+
+Duży wpływ na współczynnik korelacji mają parametry $v$ -- wartość maksymalna wag oraz $r$ -- odchylenie zysku od wagi. Nie będziemy szczególnie badać tej zależności. W dalszych rozdziałach wykorzystane dane zostały wygenerowane z parametrami $v=10$, $r=5$. 
+
+\begin{figure}
+  \begin{subfigure}[t]{.475\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{img/data_none002.png}
+    \caption{}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{.475\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{img/corrcoefnone.png}
+    \caption{}
+  \end{subfigure}
+  
+  \medskip
+  
+  \begin{subfigure}[t]{.475\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{img/data_weak062.png}
+    \caption{}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{.475\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{img/corrcoefweak061.png}
+    \caption{}
+  \end{subfigure}
+  
+   \begin{subfigure}[t]{.475\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{img/data_strong.png}
+    \caption{}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{.475\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{img/corrcoefstrong.png}
+    \caption{}
+  \end{subfigure}
+
+  \caption{1000 próbek danych (przy $v=10, r=5$) nieskorelowanych (a), skorelowanych słabo (c) i mocno skorelowanych (e). Współczynnik korelacji w 1000 wygenerowanych instancji bez korelacji (b), z korelacją słabą (d) i mocną (f).}
+\end{figure}
+
+\pagebreak
+
+Zwrócimy uwagę, że dane skorelowane \say{słabo} mają współczynnik korelacji w przybliżeniu równy 0.61 co możemy uznać za słabą korelację.
+
+\subsubsection{Pojemność plecaka}
+
+W artykule opisano 2 typy pojemności:
+\begin{itemize}
+  \item Ograniczona -- $2v$, gdzie $v$ jest wartością maksymalną wag.
+  \item Średnia  -- równa połowie sumy wszystkich wag.
+\end{itemize}
+
+Nasz generator umożliwia również ustawienie pojemności wybranej arbitralnie przez użytkownika.
+
+\subsection{Branch-and-Bound}
+
+
 %\subsection{Dane wejściowe}
 
 %Na potrzeby eksperymentów dane wejśiowe będą generowane losowo.
@@ -87,6 +171,13 @@ Oczekujemy, że zmodyfikowana wersja algorytmu genetycznego okaże się efektywn
 %\medskip
 
 %Także będzie możliwość podania przez użytkownika danych wejściowych jako plik.
-  
 
+\pagebreak
+
+\begin{thebibliography}{9}
+\bibitem{knapsack} 
+Zbigniew Michalewicz, Jarosław Arabas. "Genetic Algorithms for the 0/1 Knapsack Problem." 1994.
+\end{thebibliography}
+
+  
 \end{document}
