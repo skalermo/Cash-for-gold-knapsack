@@ -60,9 +60,9 @@ def bound(u: Node, n, W, arr):
 
 
 # Returns best node with maximum profit
-def knapsack(W, arr, n):
+def knapsack(capacity, items, n):
     # Sort Items according to val/weight ratio
-    arr.sort(key=lambda x: x.value / x.weight, reverse=True)
+    items.sort(key=lambda x: x.value / x.weight, reverse=True)
 
     # Init queue for nodes
     Q = Queue()
@@ -86,19 +86,19 @@ def knapsack(W, arr, n):
         v.level = u.level + 1   # Increment node level
 
         # Add current weight and value to u node
-        v.weight = u.weight + arr[v.level].weight
-        v.profit = u.profit + arr[v.level].value
+        v.weight = u.weight + items[v.level].weight
+        v.profit = u.profit + items[v.level].value
 
         # Save added items
         v.items = u.items.copy()
-        v.items.append(arr[v.level])
+        v.items.append(items[v.level])
 
         # If conditions are ok, update max_node
-        if v.weight <= W and v.profit > max_node.profit:
+        if v.weight <= capacity and v.profit > max_node.profit:
             max_node = v.copy()
 
         # Get upper bound to decide if add v to Queue or not
-        v.bound = bound(v, n, W, arr)
+        v.bound = bound(v, n, capacity, items)
 
         if v.bound > max_node.profit:
             Q.put(v.copy())
@@ -108,7 +108,7 @@ def knapsack(W, arr, n):
         v.profit = u.profit
         v.items = u.items.copy()
 
-        v.bound = bound(v, n, W, arr)
+        v.bound = bound(v, n, capacity, items)
 
         if v.bound > max_node.profit:
             Q.put(v.copy())
