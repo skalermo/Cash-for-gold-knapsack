@@ -27,6 +27,5 @@ class TestFitness(unittest.TestCase):
         self.assertLess(51, fitness(self.suboptimal, self.data2, has_penalty=True), 'Incorrect fitness for dataset 2')
 
 
-
 if __name__ == '__main__':
     unittest.main()
