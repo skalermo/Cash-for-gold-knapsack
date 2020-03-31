@@ -47,6 +47,6 @@ if __name__ == '__main__':
     data = gen_data(*gen_args)
 
     # Start algorithm
-    algorithms[selected_algorithm]()
+    result = algorithms[selected_algorithm](data)
 
-
+    print(result)
