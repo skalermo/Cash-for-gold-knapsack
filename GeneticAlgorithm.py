@@ -2,8 +2,18 @@ import random
 from datetime import datetime
 
 
-# Single point crossover
 def crossover(parents, seed=None, point=None):
+    """
+    Single point crossover.
+    Produce two offsprings, each carrying some genetic information from both parents.
+
+    (If point is set, seed has no effect on choosing crossover point)
+
+    :param parents: Chromosome pair
+    :param seed:    Random seed
+    :param point:   Crossover point
+    :return:
+    """
     chromosome1, chromosome2 = parents
 
     # Set seed
@@ -20,5 +30,7 @@ def crossover(parents, seed=None, point=None):
     child2 = chromosome2[:point] + chromosome1[point:]
 
     return child1, child2
+
+
 
 
