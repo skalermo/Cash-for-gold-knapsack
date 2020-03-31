@@ -44,24 +44,20 @@ def fitness(x, data, has_penalty=False):
     """
     penalty = 0
     if has_penalty:
-        # Find p = max(P[i] / W[i]) and weight_sum = sum(x[i] * W[i] - C)
-        p = 0
-        weight_sum = 0
-        for i in range(len(x)):
-            weight_sum += x[i] * data['weights'][i] - data['capacity']
+        weight_sum = sum([x[i] * data['weights'][i] for i in range(len(x))])
+        if weight_sum > data['capacity']:
+            # Find p = max(P[i] / W[i])
+            p = max(data['profits'][i] / data['weights'][i] for i in range(len(x)))
 
-            ratio = data['profits'][i] / data['weights'][i]
-            if ratio > p:
-                p = ratio
+            # Find weight_sum = sum(x[i] * W[i]) - C
+            weight_sum -= data['capacity']
 
-        penalty = np.log2(1 + p * weight_sum)
+            # Set penalty
+            penalty = np.log2(1 + p * weight_sum)
 
     # Find fitness = sum(x[i] * P[i] - Penalty(x))
-    fit = 0
-    for i in range(len(x)):
-        fit += x[i] * data['profits'][i] - penalty
+    return sum([x[i] * data['profits'][i] - penalty for i in range(len(x))])
 
-    return fit
 
 
 
