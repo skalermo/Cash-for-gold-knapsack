@@ -63,3 +63,13 @@ class TestGenerator(TestCase):
         n = random.randint(100, 200)
         data = gen_data(n=n, capacity_type='average')
         self.assertEqual(0.5*sum(data['weights']), data['capacity'])
+
+    def test_gen_data_field_n(self):
+        n = random.randint(100, 200)
+        data = gen_data(n=n)
+        self.assertEqual(n, data['n'])
+
+    def test_gen_data_field_ratio(self):
+        data = gen_data()
+        for i in range(data['n']):
+            self.assertEqual(data['ratios'][i], data['profits'][i]/data['weights'][i])

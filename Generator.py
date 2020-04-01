@@ -68,9 +68,13 @@ def gen_data(n: int = 100,
     else:
         capacity_type = 'custom'
 
+    ratios = [p/w for w, p in zip(weights, profits)]
+
     data = {
+        'n': n,
         'weights': weights,
         'profits': profits,
+        'ratios': ratios,
         'capacity': capacity,
         'capacity_type': capacity_type,
         'correlation': correlation,
