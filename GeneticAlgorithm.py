@@ -140,8 +140,11 @@ def gen_random_chromosome(size) -> list:
 
 def mutate(chromosome):
     """
-    Select randomly and flip a bit
+    Select and flip random bit in chromosome
     :param chromosome: Chromosome to mutate
+    :return: Mutated chromosome
     """
     idx = random.randint(0, len(chromosome)-1)
-    chromosome[idx] = 1 - chromosome[idx]
+    mutated = chromosome.copy()
+    mutated[idx] = 1 - chromosome[idx]
+    return mutated
