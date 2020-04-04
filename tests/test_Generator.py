@@ -32,7 +32,7 @@ class TestGenerator(TestCase):
     def test_gen_data_in_range(self):
         v = random.randint(50, 150)
         data = gen_data(n=100, v=v)
-        self.assertTrue(all([1 < x < v for x in data['weights']]))
+        self.assertTrue(all([1 <= x <= v for x in data['weights']]))
 
     def test_gen_data_strong_corr(self):
         n = random.randint(100, 200)
