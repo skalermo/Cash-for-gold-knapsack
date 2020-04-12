@@ -74,7 +74,7 @@ def next_generation(data, generation, crossover_rate=0.65, mutation_rate=0.05, e
     # selection
     # breed selected
     # mutate selected and children
-    # choose n best
+    # sort all and choose n best
 
     # Breed and mutate children
     children = breed_population(generation, elite_size, crossover_rate)
@@ -96,18 +96,19 @@ def next_generation(data, generation, crossover_rate=0.65, mutation_rate=0.05, e
     pass
 
 
-def selection(ranked, elite_size, selection_size):
+def selection(population, elite_size, selection_size):
     """
     Select parents for next population using Elitism and Tournament Selection
     """
-    selected = []
 
-    # Choose elite
-    selected.append(ranked[:elite_size])
+    # Create list and choose elite
+    selected = population[:elite_size]
 
+    # Tournament selection
     for _ in range(selection_size - elite_size):
-        chromo1, chromo2 = random.choices(ranked, k=2)
-        selected.append(max(chromo1, chromo2))
+        chromo1_idx, chromo2_idx = random.choices(range(len(population)), k=2)
+        idx = min(chromo1_idx, chromo2_idx)
+        selected.append(population[idx])
 
     return selected
 
