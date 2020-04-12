@@ -61,6 +61,12 @@ def gen_data(n: int = 100,
     elif correlation == 'strong':
         profits = [round(r + weights[i], 1) for i in range(n)]
 
+    # sort profits and weights by p/w ratio
+    profits, weights = (list(t) for t in zip(*sorted(zip(profits, weights),
+                                                     key=lambda tup: tup[0]/tup[1], reverse=True)))
+
+    ratios = [p/w for w, p in zip(weights, profits)]
+
     if capacity is None:
         capacity = {
             'restrictive': 2*v,
@@ -68,8 +74,6 @@ def gen_data(n: int = 100,
         }.get(capacity_type, 'restrictive')
     else:
         capacity_type = 'custom'
-
-    ratios = [p/w for w, p in zip(weights, profits)]
 
     data = {
         'n': n,
