@@ -74,7 +74,7 @@ def next_generation(data, population, crossover_rate=0.65, mutation_rate=0.05, e
 
     # Select and breed parents
     parents = selection(population, elite_size, 100) # selection size ?
-    children = breed(population, elite_size, crossover_rate)
+    children = breed(parents, crossover_rate)
 
     # Mutate parents and children
     new_individuals = parents + children
@@ -106,17 +106,13 @@ def selection(population, elite_size, selection_size):
     return selected
 
 
-def breed(mating_pool, elite_size, crossover_rate):
+def breed(mating_pool, crossover_rate):
     """
     Produce children from elite and by breeding.
     mating_pool is shuffled by this function.
     """
 
     children = []
-
-    # add elite to children
-    for i in range(elite_size):
-        children.append(mating_pool[i])
 
     # shuffle mating pool
     random.shuffle(mating_pool)
