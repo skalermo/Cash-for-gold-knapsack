@@ -70,9 +70,14 @@ def genetic_algorithm(data, generations, pop_size=100, crossover_rate=0.65, muta
     pass
 
 
-def next_generation(data, generation, crossover_rate, mutation_rate):
-    # # Breed and mutate children
-    # children = breedPopulation(generation, eliteSize)
+def next_generation(data, generation, crossover_rate=0.65, mutation_rate=0.05, elite_size=1):
+    # selection
+    # breed selected
+    # mutate selected and children
+    # choose n best
+
+    # Breed and mutate children
+    children = breed_population(generation, elite_size, crossover_rate)
     # children = mutatePopulation(children, 0.1, mutationRate)
     #
     # # Sum this generation with children
@@ -91,19 +96,56 @@ def next_generation(data, generation, crossover_rate, mutation_rate):
     pass
 
 
+def selection(ranked, elite_size, selection_size):
+    """
+    Select parents for next population using Elitism and Tournament Selection
+    """
+    selected = []
+
+    # Choose elite
+    selected.append(ranked[:elite_size])
+
+    for _ in range(selection_size - elite_size):
+        chromo1, chromo2 = random.choices(ranked, k=2)
+        selected.append(max(chromo1, chromo2))
+
+    return selected
+
+
 def breed_population(mating_pool, elite_size, crossover_rate):
-    pass
+    """
+    Produce children from elite and by breeding.
+    mating_pool is shuffled by this function.
+    """
+
+    children = []
+
+    # add elite to children
+    for i in range(elite_size):
+        children.append(mating_pool[i])
+
+    # shuffle mating pool
+    random.shuffle(mating_pool)
+
+    # breed new and add them to children
+    for i in range(len(mating_pool)//2):
+        if random.random() < crossover_rate:
+            born_children = crossover(mating_pool[i], mating_pool[-i - 1])
+            children.append(*born_children)
+
+    return children
 
 
 def mutate_population(population, selection_rate, mutation_rate):
     pass
 
 
-def init_population(pop_size, data, heuristic_ratio=0.03):
+def init_population(pop_size, data, heuristic_ratio=0):
     """
-    Populate the initial population with
-    solutions found by heuristic and random ones.
-    Heuristic solutions make some of total solutions in the population.
+    Populate the initial population
+    with random solutions.
+    Heuristic ratio defines how many chromosomes have first bit set.
+    Half of that amount also have last bit unset.
     :param pop_size: Size of population
     :param data: Input data
     :param heuristic_ratio: Heuristic solutions/all solutions
@@ -111,25 +153,21 @@ def init_population(pop_size, data, heuristic_ratio=0.03):
     """
 
     heuristic_solutions_number = int(heuristic_ratio * pop_size)
-    random_solutions_number = pop_size - heuristic_solutions_number
     population = []
 
-    # Generate heuristic solutions
-    # probability of whether item will be chosen is based on profit/weight ratio
-    chances_to_choose = [ratio/max(data['ratios']) for ratio in data['ratios']]
-    for _ in range(heuristic_solutions_number):
-        weight_sum = 0
-        solution = [0]*data['n']
-        for i, chance in enumerate(chances_to_choose):
-            if weight_sum + data['weights'][i] <= data['capacity']:
-                if random.random() < chance:
-                    solution[i] = 1
-                    weight_sum += data['weights'][i]
-        population.append(solution)
-
     # Generate random solutions
-    for _ in range(random_solutions_number):
+    for _ in range(pop_size):
         population.append(gen_random_chromosome(data['n']))
+
+    # Set first bit
+    ids = random.sample(range(pop_size), heuristic_solutions_number)
+    for idx in ids:
+        population[idx][0] = 1
+
+    # Unset last bit
+    ids = random.sample(range(pop_size), heuristic_solutions_number//2)
+    for idx in ids:
+        population[idx][-1] = 0
 
     return population
 
