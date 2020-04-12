@@ -73,3 +73,7 @@ class TestGenerator(TestCase):
         data = gen_data()
         for i in range(data['n']):
             self.assertEqual(data['ratios'][i], data['profits'][i]/data['weights'][i])
+
+    def test_gen_data_if_sorted(self):
+        data = gen_data()
+        self.assertTrue(all(data['ratios'][i] >= data['ratios'][i+1] for i in range(data['n']-1)))
