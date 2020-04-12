@@ -70,30 +70,23 @@ def genetic_algorithm(data, generations, pop_size=100, crossover_rate=0.65, muta
     pass
 
 
-def next_generation(data, generation, crossover_rate=0.65, mutation_rate=0.05, elite_size=1):
-    # selection
-    # breed selected
-    # mutate selected and children
-    # sort all and choose n best
+def next_generation(data, population, crossover_rate=0.65, mutation_rate=0.05, elite_size=1):
 
-    # Breed and mutate children
-    children = breed_population(generation, elite_size, crossover_rate)
-    # children = mutatePopulation(children, 0.1, mutationRate)
-    #
-    # # Sum this generation with children
-    # generetionSum = generation + children
-    #
-    # # Rank every individual
-    # ranked = rankPaths(graph, generetionSum)
-    #
-    # # Select individuals for next generation
-    # selected = selection(ranked, eliteSize, len(generation))
-    #
-    # # Get individual list from index list
-    # nextGen = indexToPopulation(generetionSum, selected)
-    #
-    # return nextGen
-    pass
+    # Select and breed parents
+    parents = selection(population, elite_size, 100) # selection size ?
+    children = breed(population, elite_size, crossover_rate)
+
+    # Mutate parents and children
+    new_individuals = parents + children
+    mutate_chromosomes(new_individuals, mutation_rate)
+
+    # repair_chromosomes(new_individuals)
+
+    # Sort chromosomes by their fitness
+    new_population = sorted(new_individuals, key=lambda x: fitness(x, data, True), reverse=True)
+
+    # Truncate new population size and return new population
+    return new_population[:len(population)]
 
 
 def selection(population, elite_size, selection_size):
@@ -113,7 +106,7 @@ def selection(population, elite_size, selection_size):
     return selected
 
 
-def breed_population(mating_pool, elite_size, crossover_rate):
+def breed(mating_pool, elite_size, crossover_rate):
     """
     Produce children from elite and by breeding.
     mating_pool is shuffled by this function.
@@ -137,7 +130,7 @@ def breed_population(mating_pool, elite_size, crossover_rate):
     return children
 
 
-def mutate_population(population, selection_rate, mutation_rate):
+def mutate_chromosomes(chromosomes, mutation_rate):
     pass
 
 
