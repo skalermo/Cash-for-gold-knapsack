@@ -33,9 +33,6 @@ def gen_data(n: int = 100,
     capacity_type: average
         C = 0.5 * sum(W)
 
-    capacity_type: random
-        C = n * avg(W) * random(0..1)
-
     :param n: Number of items
     :param v: Weight cap
     :param r: Correlation value
@@ -53,24 +50,36 @@ def gen_data(n: int = 100,
 
     weights = [round(random.uniform(1, v), 1) for _ in range(n)]
 
-    profits = {
-        'none': lambda: [round(random.uniform(1, v), 1) for _ in range(n)],
-        'weak': lambda: _weak_corr_profits(n, r, weights),
-        'strong': lambda: [round(r + weights[i], 1) for i in range(n)]
-    }.get(correlation, 'weak')()
+    if correlation is None:
+        correlation = 'weak'
+
+    profits = []
+    if correlation == 'none':
+        profits = [round(random.uniform(1, v), 1) for _ in range(n)]
+    elif correlation == 'weak':
+        profits = _weak_corr_profits(n, r, weights)
+    elif correlation == 'strong':
+        profits = [round(r + weights[i], 1) for i in range(n)]
+
+    # sort profits and weights by p/w ratio
+    profits, weights = (list(t) for t in zip(*sorted(zip(profits, weights),
+                                                     key=lambda tup: tup[0]/tup[1], reverse=True)))
+
+    ratios = [p/w for w, p in zip(weights, profits)]
 
     if capacity is None:
         capacity = {
-            'restrictive': lambda: 2*v,
-            'average': lambda: 0.5*sum(weights),
-            'random': lambda: round(random.random()*n*sum(weights)/len(weights), 1)
-        }.get(capacity_type, 'restrictive')()
+            'restrictive': 2*v,
+            'average': 0.5*sum(weights),
+        }.get(capacity_type, 'restrictive')
     else:
         capacity_type = 'custom'
 
     data = {
+        'n': n,
         'weights': weights,
         'profits': profits,
+        'ratios': ratios,
         'capacity': capacity,
         'capacity_type': capacity_type,
         'correlation': correlation,
