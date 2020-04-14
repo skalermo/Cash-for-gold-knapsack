@@ -127,7 +127,9 @@ def breed(mating_pool, crossover_rate):
 
 
 def mutate_chromosomes(chromosomes, mutation_rate):
-    pass
+    for chromosome in chromosomes:
+        if random.random() < mutation_rate:
+            mutate(chromosome)
 
 
 def init_population(pop_size, data, heuristic_ratio=0):
