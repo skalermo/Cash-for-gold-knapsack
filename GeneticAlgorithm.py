@@ -170,9 +170,6 @@ def mutate(chromosome):
     """
     Select and flip random bit in chromosome
     :param chromosome: Chromosome to mutate
-    :return: Mutated chromosome
     """
     idx = random.randint(0, len(chromosome)-1)
-    mutated = chromosome.copy()
-    mutated[idx] = 1 - chromosome[idx]
-    return mutated
+    chromosome[idx] = 1 - chromosome[idx]
