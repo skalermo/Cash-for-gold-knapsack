@@ -5,9 +5,12 @@ from GeneticAlgorithm import fitness
 class TestFitness(unittest.TestCase):
     def setUp(self):
         self.data1 = {'capacity': 10, 'weights': [2, 3.14, 1.98, 5.0, 3.0], 'profits': [40, 50, 100, 95, 30]}
+        self.data1['ratios'] = [self.data1['profits'][i] / self.data1['weights'][i] for i in range(len(self.data1))]
         self.optimal1 = [1, 0, 1, 1, 0]
 
         self.data2 = {'capacity': 26, 'weights': [12,  7, 11,  8,  9], 'profits': [24, 13, 23, 15, 16]}
+        self.data2['ratios'] = [self.data2['profits'][i] / self.data2['weights'][i] for i in range(len(self.data2))]
+
         self.optimal2 = [0, 1, 1, 1, 0]
 
         self.suboptimal = [1, 1, 1, 1, 1]

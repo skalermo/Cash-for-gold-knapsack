@@ -47,7 +47,7 @@ def fitness(x, data, has_penalty=False):
         weight_sum = sum([x[i] * data['weights'][i] for i in range(len(x))])
         if weight_sum > data['capacity']:
             # Find p = max(P[i] / W[i])
-            p = max(data['profits'][i] / data['weights'][i] for i in range(len(x)))
+            p = max(data['ratios'])
 
             # Find weight_sum = sum(x[i] * W[i]) - C
             weight_sum -= data['capacity']
@@ -56,7 +56,7 @@ def fitness(x, data, has_penalty=False):
             penalty = np.log2(1 + p * weight_sum)
 
     # Find fitness = sum(x[i] * P[i] - Penalty(x))
-    return sum([x[i] * data['profits'][i] - penalty for i in range(len(x))])
+    return sum([x[i] * data['profits'][i] for i in range(len(x))]) - penalty
 
 
 def genetic_algorithm(data, generations, pop_size=100, crossover_rate=0.65, mutation_rate=0.05, seed=None):
