@@ -1,16 +1,6 @@
 from queue import Queue
 
 
-# Item class for weight and value
-class Item:
-    def __init__(self, w: float, v: int):
-        self.weight = w
-        self.value = v
-
-    def __str__(self):
-        return '({0}, {1})'.format(self.weight, self.value)
-
-
 # Node class for BNB algorithm
 class Node:
     def __init__(self, l, p, w, b, i=None):
@@ -35,7 +25,7 @@ class Node:
 
 
 # Return upper bound of profit in subtree
-def bound(u: Node, n, W, arr):
+def bound(u: Node, n, W, items):
     if u.weight >= W:
         return 0
 
@@ -47,22 +37,24 @@ def bound(u: Node, n, W, arr):
     tot_weight = u.weight
 
     # Check index and knapsack capacity conditions
-    while (j < n) and (tot_weight + arr[j].weight <= W):
-        tot_weight += arr[j].weight
-        profit_bound += arr[j].value
+    while (j < n) and (tot_weight + items[j]['weight'] <= W):
+        tot_weight += items[j]['weight']
+        profit_bound += items[j]['value']
         j += 1
 
     # Include last item partially for upper bound on profit
     if j < n:
-        profit_bound += (W - tot_weight) * arr[j].value // arr[j].weight
+        profit_bound += (W - tot_weight) * items[j]['value'] // items[j]['weight']
 
     return profit_bound
 
 
 # Returns best node with maximum profit
-def knapsack(W, arr, n):
-    # Sort Items according to val/weight ratio
-    arr.sort(key=lambda x: x.value / x.weight, reverse=True)
+def knapsack(data):
+    # Init variables
+    W = data['capacity']
+    items = [{'weight': w, 'value': p} for (w, p) in zip(data['weights'], data['profits'])]
+    n = len(items)
 
     # Init queue for nodes
     Q = Queue()
@@ -86,19 +78,19 @@ def knapsack(W, arr, n):
         v.level = u.level + 1   # Increment node level
 
         # Add current weight and value to u node
-        v.weight = u.weight + arr[v.level].weight
-        v.profit = u.profit + arr[v.level].value
+        v.weight = u.weight + items[v.level]['weight']
+        v.profit = u.profit + items[v.level]['value']
 
         # Save added items
         v.items = u.items.copy()
-        v.items.append(arr[v.level])
+        v.items.append(items[v.level])
 
         # If conditions are ok, update max_node
         if v.weight <= W and v.profit > max_node.profit:
             max_node = v.copy()
 
         # Get upper bound to decide if add v to Queue or not
-        v.bound = bound(v, n, W, arr)
+        v.bound = bound(v, n, W, items)
 
         if v.bound > max_node.profit:
             Q.put(v.copy())
@@ -108,7 +100,7 @@ def knapsack(W, arr, n):
         v.profit = u.profit
         v.items = u.items.copy()
 
-        v.bound = bound(v, n, W, arr)
+        v.bound = bound(v, n, W, items)
 
         if v.bound > max_node.profit:
             Q.put(v.copy())

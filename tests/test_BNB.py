@@ -1,5 +1,5 @@
 import unittest
-from BNBAlgorithm import knapsack, Item
+from BNBAlgorithm import knapsack
 
 
 class BNBTesting(unittest.TestCase):
@@ -9,16 +9,23 @@ class BNBTesting(unittest.TestCase):
             return
 
         # Items from weights and profits
-        items = [Item(w, p) for (w, p) in zip(weights, profits)]
+        items = [{'weight': w, 'value': p} for (w, p) in zip(weights, profits)]
 
         # Optimal selection
         result = [items[i] for i in range(len(optimal)) if optimal[i] == 1]
 
         # Max profit from optimal selection
-        max_profit = sum(i.value for i in result)
+        max_profit = sum(item['value'] for item in result)
+
+        # Sort Items according to val/weight ratio
+        profits, weights = (list(t) for t in zip(*sorted(zip(profits, weights),
+                                                         key=lambda tup: tup[0] / tup[1], reverse=True)))
+
+        # Create dict with sorted values
+        data = {'capacity': capacity, 'weights': weights, 'profits': profits}
 
         # Run algorithm
-        n = knapsack(capacity, items, len(items))
+        n = knapsack(data)
 
         self.assertEqual(max_profit, n.profit, "Wrong profit")
         self.assertTrue(all(x in result for x in n.items), "Wrong selection")
