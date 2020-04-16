@@ -1,22 +1,23 @@
 import unittest
-from GeneticAlgorithm import mutate
+from Chromosome import Chromosome
 
 
 class TestMutations(unittest.TestCase):
     def test_mutate(self):
-        chromosome = [0, 1, 1, 1, 1, 0, 0, 0]
+        chromosome = Chromosome([0, 1, 1, 1, 1, 0, 0, 0])
         chromosome_mutated = chromosome.copy()
-        mutate(chromosome_mutated)
-        self.assertNotEqual(chromosome, chromosome_mutated)
+        chromosome_mutated.mutate()
+        self.assertNotEqual(chromosome.gene, chromosome_mutated.gene)
 
-        chromosome = [1]*10
+        chromosome = Chromosome([1]*10)
         chromosome_mutated = chromosome.copy()
-        mutate(chromosome_mutated)
+        chromosome_mutated.mutate()
+
         self.assertFalse(all(chromosome_mutated))
 
-        chromosome = [0]*10
+        chromosome = Chromosome([0]*10)
         chromosome_mutated = chromosome.copy()
-        mutate(chromosome_mutated)
+        chromosome_mutated.mutate()
         self.assertTrue(any(chromosome_mutated))
 
 
