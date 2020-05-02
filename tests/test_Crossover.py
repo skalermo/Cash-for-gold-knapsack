@@ -1,5 +1,5 @@
 import unittest
-from GeneticAlgorithm import crossover
+from Chromosome import Chromosome
 
 
 class TestCrossover(unittest.TestCase):
@@ -8,7 +8,7 @@ class TestCrossover(unittest.TestCase):
         parents = ([1, 1, 1, 1, 1, 1], [0, 0, 0, 0, 0, 0])
         results = ([1, 1, 1, 1, 0, 0], [0, 0, 0, 0, 1, 1])
 
-        children = crossover(parents, seed=5)
+        children = Chromosome.crossover(parents, seed=5)
 
         self.assertEqual(len(parents[0]), len(children[0]), "Children are not same length")
         self.assertEqual(len(parents[1]), len(children[1]), "Children are not same length")
@@ -18,7 +18,7 @@ class TestCrossover(unittest.TestCase):
         parents = ([1, 1, 1, 1, 1, 1], [0, 0, 0, 0, 0, 0])
         results = ([1, 1, 1, 0, 0, 0], [0, 0, 0, 1, 1, 1])
 
-        children = crossover(parents, point=3)
+        children = Chromosome.crossover(parents, point=3)
 
         self.assertEqual(len(parents[0]), len(children[0]), "Children are not same length")
         self.assertEqual(len(parents[1]), len(children[1]), "Children are not same length")

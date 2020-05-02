@@ -1,7 +1,6 @@
 import unittest
 from Generator import gen_data
-from GeneticAlgorithm import init_population, fitness, breed_population
-from BNBAlgorithm import knapsack, Item
+from GeneticAlgorithm import init_population
 
 
 class TestPopulation(unittest.TestCase):
