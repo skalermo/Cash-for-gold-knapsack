@@ -7,18 +7,18 @@ from GeneticAlgorithm import init_population
 class TestRepairChromosome(unittest.TestCase):
     def test_no_overfilling(self):
         data = gen_data(seed=0)
-        c = Chromosome([0]*data['n'])
+        c = Chromosome([0]*data['n'], data)
         c[0] = 1
         weight_sum = data['weights'][0]
         self.assertLessEqual(weight_sum, data['capacity'])
 
     def test_no_overfilling_repair(self):
         data = gen_data(seed=0)
-        c = Chromosome([0] * data['n'])
+        c = Chromosome([0] * data['n'], data)
         c[0] = 1
         weight_sum = data['weights'][0]
         copied = c.copy()
-        c.repair(data)
+        c.repair()
         self.assertEqual(copied.gene, c.gene)
         self.assertLessEqual(weight_sum, data['capacity'])
 
@@ -28,8 +28,9 @@ class TestRepairChromosome(unittest.TestCase):
         c = population[0]
         weight_sum = sum([c.gene[i] * data['weights'][i] for i in range(len(c.gene))])
         self.assertGreater(weight_sum, data['capacity'])
+
         copied = c.copy()
-        c.repair(data)
+        c.repair()
         self.assertNotEqual(copied.gene, c.gene)
         weight_sum = sum([c.gene[i] * data['weights'][i] for i in range(len(c.gene))])
         self.assertLessEqual(weight_sum, data['capacity'])
