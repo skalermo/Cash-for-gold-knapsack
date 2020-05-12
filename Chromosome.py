@@ -22,6 +22,12 @@ class Chromosome:
     def __getitem__(self, key):
         return self.gene[key]
 
+    def __len__(self):
+        return len(self.gene)
+
+    def __eq__(self, other):
+        return self.gene == other.gene
+
     def repair(self, mode='greedy'):
         """
         Repair chromosome by removing extra elements.
@@ -59,6 +65,8 @@ class Chromosome:
         :return:        2 children
         """
         x, y = parents
+        data = x.data
+        x, y = x.gene, y.gene
 
         # Set seed
         if seed is None:
@@ -73,7 +81,7 @@ class Chromosome:
         child1 = x[:point] + y[point:]
         child2 = y[:point] + x[point:]
 
-        return child1, child2
+        return Chromosome(child1, data), Chromosome(child2, data)
 
     def mutate(self):
         """
