@@ -5,8 +5,8 @@ from Chromosome import Chromosome
 class TestCrossover(unittest.TestCase):
 
     def test_randSinglePoint(self):
-        parents = ([1, 1, 1, 1, 1, 1], [0, 0, 0, 0, 0, 0])
-        results = ([1, 1, 1, 1, 0, 0], [0, 0, 0, 0, 1, 1])
+        parents = (Chromosome([1, 1, 1, 1, 1, 1]), Chromosome([0, 0, 0, 0, 0, 0]))
+        results = (Chromosome([1, 1, 1, 1, 0, 0]), Chromosome([0, 0, 0, 0, 1, 1]))
 
         children = Chromosome.crossover(parents, seed=5)
 
@@ -15,8 +15,8 @@ class TestCrossover(unittest.TestCase):
         self.assertEqual(results, children, "Incorrect result")
 
     def test_constSinglePoint(self):
-        parents = ([1, 1, 1, 1, 1, 1], [0, 0, 0, 0, 0, 0])
-        results = ([1, 1, 1, 0, 0, 0], [0, 0, 0, 1, 1, 1])
+        parents = (Chromosome([1, 1, 1, 1, 1, 1]), Chromosome([0, 0, 0, 0, 0, 0]))
+        results = (Chromosome([1, 1, 1, 0, 0, 0]), Chromosome([0, 0, 0, 1, 1, 1]))
 
         children = Chromosome.crossover(parents, point=3)
 
