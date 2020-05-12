@@ -5,9 +5,16 @@ import numpy as np
 
 class Chromosome:
 
-    def __init__(self, gene):
+    def __init__(self, gene, data=None):
+        # always set data, unless running in tests
+
         self.gene = gene
         self.fitness = 0
+        self.data = data
+        if data:
+            # possible enhancement: filtered = itertools.compress(s, b)
+            self.weight_sum = sum([self.gene[i] * self.data['weights'][i]
+                                   for i in range(len(self.gene))])
 
     def __setitem__(self, key, value):
         self.gene[key] = value
@@ -15,15 +22,13 @@ class Chromosome:
     def __getitem__(self, key):
         return self.gene[key]
 
-    def repair(self, data, mode='greedy'):
+    def repair(self, mode='greedy'):
         """
         Repair chromosome by removing extra elements.
         Inplace operation.
         There are two modes: greedy and random.
         """
-        # possible enhancement: filtered = itertools.compress(s, b)
-        weight_sum = sum([self.gene[i] * data['weights'][i] for i in range(len(self.gene))])
-        if weight_sum <= data['capacity']:
+        if self.weight_sum <= self.data['capacity']:
             return
 
         knapsack_overfilled = True
@@ -31,14 +36,14 @@ class Chromosome:
         while knapsack_overfilled:
             if mode == 'greedy':
                 i -= 1
-                weight_sum -= data['weights'][i] * self.gene[i]
+                self.weight_sum -= self.data['weights'][i] * self.gene[i]
                 self.gene[i] = 0
 
-            if weight_sum <= data['capacity']:
+            if self.weight_sum <= self.data['capacity']:
                 return
 
     def copy(self):
-        return Chromosome(self.gene.copy())
+        return Chromosome(self.gene.copy(), self.data)
 
     @staticmethod
     def crossover(parents, seed=None, point=None):
@@ -54,7 +59,6 @@ class Chromosome:
         :return:        2 children
         """
         x, y = parents
-        x, y = x.gene, y.gene
 
         # Set seed
         if seed is None:
@@ -69,7 +73,7 @@ class Chromosome:
         child1 = x[:point] + y[point:]
         child2 = y[:point] + x[point:]
 
-        return Chromosome(child1), Chromosome(child2)
+        return child1, child2
 
     def mutate(self):
         """
@@ -79,13 +83,13 @@ class Chromosome:
         idx = random.randint(0, len(self.gene) - 1)
         self.gene[idx] = 1 - self.gene[idx]
 
-    def get_fitness(self, data, has_penalty=False):
+    def get_fitness(self, has_penalty=True):
         if self.fitness <= 0:
-            self.fitness = self.calc_fitness(data, has_penalty)
+            self.fitness = self.calc_fitness(has_penalty)
 
         return self.fitness
 
-    def calc_fitness(self, data, has_penalty):
+    def calc_fitness(self, has_penalty):
         """
         Fitness evaluation function with logarithmic penalty function
 
@@ -96,17 +100,16 @@ class Chromosome:
 
         penalty = 0
         if has_penalty:
-            weight_sum = sum([self.gene[i] * data['weights'][i] for i in range(len(self.gene))])
-            if weight_sum > data['capacity']:
+            if self.weight_sum > self.data['capacity']:
                 # Get p = max(P[i] / W[i])
-                p = data['ratios'][0]
+                p = self.data['ratios'][0]
 
-                # Find weight_sum = sum(x[i] * W[i]) - C
-                weight_sum -= data['capacity']
+                # Find sum_diff = sum(x[i] * W[i]) - C
+                sum_diff = self.weight_sum - self.data['capacity']
 
                 # Set penalty
-                penalty = np.log2(1 + p * weight_sum)
+                penalty = np.log2(1 + p * sum_diff)
 
         # Find fitness = sum(x[i] * P[i] - Penalty(x))
-        return sum([self.gene[i] * data['profits'][i] for i in range(len(self.gene))]) - penalty
+        return sum([self.gene[i] * self.data['profits'][i] for i in range(len(self.gene))]) - penalty
 
