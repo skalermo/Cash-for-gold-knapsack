@@ -32,6 +32,7 @@ class Chromosome:
         :return:        2 children
         """
         x, y = parents
+        x, y = x.gene, y.gene
 
         # Set seed
         if seed is None:
@@ -46,7 +47,7 @@ class Chromosome:
         child1 = x[:point] + y[point:]
         child2 = y[:point] + x[point:]
 
-        return child1, child2
+        return Chromosome(child1), Chromosome(child2)
 
     def mutate(self):
         """
