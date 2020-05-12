@@ -15,6 +15,28 @@ class Chromosome:
     def __getitem__(self, key):
         return self.gene[key]
 
+    def repair(self, data, mode='greedy'):
+        """
+        Repair chromosome by removing extra elements.
+        Inplace operation.
+        There are two modes: greedy and random.
+        """
+        # possible enhancement: filtered = itertools.compress(s, b)
+        weight_sum = sum([self.gene[i] * data['weights'][i] for i in range(len(self.gene))])
+        if weight_sum <= data['capacity']:
+            return
+
+        knapsack_overfilled = True
+        i = 0
+        while knapsack_overfilled:
+            if mode == 'greedy':
+                i -= 1
+                weight_sum -= data['weights'][i] * self.gene[i]
+                self.gene[i] = 0
+
+            if weight_sum <= data['capacity']:
+                return
+
     def copy(self):
         return Chromosome(self.gene.copy())
 
