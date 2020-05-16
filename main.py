@@ -16,9 +16,10 @@ if __name__ == '__main__':
     parser.add_argument('-r', type=int, default=5, metavar='', help='Correlation value')
     parser.add_argument('-p', type=str, default='weak', metavar='',
                         help='Correlation between profits and weights (none, weak, strong)')
-    parser.add_argument('-c', type=str, default='random', metavar='',
-                        help='Capacity type (restrictive, average, random, custom: number)')
-    parser.add_argument('-a', type=str, metavar='', help='Algorithm type (BNB, Genetic, Modified)')
+    parser.add_argument('-c', type=str, default='average', metavar='',
+                        help='Capacity type (restrictive, average, custom: number)')
+    parser.add_argument('-a', type=str, metavar='', help='Algorithm type (BnB, Genetic, Modified)')
+    parser.add_argument('-d', type=int, default=None, help='Depth for BnB Algorithm')
     parser.add_argument('-g', type=int, default=100, metavar='', help='Number of generations')
 
     args = vars(parser.parse_args())
@@ -47,6 +48,11 @@ if __name__ == '__main__':
     data = gen_data(*gen_args)
 
     # Start algorithm
-    result = algorithms[selected_algorithm](data)
+    if selected_algorithm == 'bnb':
+        func_args = (data, args['d'])
+    else:
+        func_args = (data,)
+
+    result = algorithms[selected_algorithm](*func_args)
 
     print(result)
