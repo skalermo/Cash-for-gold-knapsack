@@ -60,7 +60,7 @@ def bound(u: Node, n, W, arr):
 
 
 # Returns best node with maximum profit
-def knapsack(data):
+def knapsack(data, depth=None):
     capacity = data['capacity']
     items = [Item(w, p) for (w, p) in zip(data['weights'], data['profits'])]
     n = len(items)
@@ -105,7 +105,8 @@ def knapsack(data):
         v.bound = bound(v, n, capacity, items_sorted)
 
         if v.bound > max_node.profit:
-            Q.put(v.copy())
+            if depth is None or depth > v.level:
+                Q.put(v.copy())
 
         # Repeat without taking item to knapsack
         v.weight = u.weight
@@ -115,7 +116,9 @@ def knapsack(data):
         v.bound = bound(v, n, capacity, items_sorted)
 
         if v.bound > max_node.profit:
-            Q.put(v.copy())
+            if depth is None or depth > v.level:
+                Q.put(v.copy())
 
-    result = {'profits': max_node.profit, 'optimal': [1 if x in max_node.items else 0 for x in items]}
+    result = {'profits': max_node.profit, 'optimal': [1 if x in max_node.items else 0 for x in items],
+              'depth': max_node.level}
     return result
