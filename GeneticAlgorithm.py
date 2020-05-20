@@ -11,7 +11,16 @@ def genetic_algorithm(data, generations, pop_size=100, crossover_rate=0.65, muta
 
     # Initialize population
     population = init_population(pop_size, data)
-    pass
+
+    progress = [population[0].fitness]
+    progress_avg = [sum(chromo.fitness for chromo in population) / len(population)]
+
+    for i in range(generations):
+        population = next_generation(data, population, crossover_rate, mutation_rate)
+        progress.append(population[0].fitness)
+        progress_avg.append(sum(chromo.fitness for chromo in population) / len(population))
+
+    return population[0], progress, progress_avg
 
 
 def next_generation(data, population, crossover_rate=0.65, mutation_rate=0.05, elite_size=1):
@@ -24,13 +33,18 @@ def next_generation(data, population, crossover_rate=0.65, mutation_rate=0.05, e
     new_individuals = parents + children
     mutate_chromosomes(new_individuals, mutation_rate)
 
-    # repair_chromosomes(new_individuals)
+    repair_chromosomes(new_individuals)
 
     # Sort chromosomes by their fitness
-    new_population = sorted(new_individuals, key=lambda x: fitness(x, data, True), reverse=True)
+    new_population = sorted(new_individuals, key=lambda x: x.calc_fitness(), reverse=True)
 
     # Truncate new population size and return new population
     return new_population[:len(population)]
+
+
+def repair_chromosomes(chromosomes):
+    for chromosome in chromosomes:
+        chromosome.repair()
 
 
 def selection(population, elite_size, selection_size):
@@ -64,8 +78,8 @@ def breed(mating_pool, crossover_rate):
     # breed new and add them to children
     for i in range(len(mating_pool)//2):
         if random.random() < crossover_rate:
-            born_children = Chromosome.crossover(mating_pool[i], mating_pool[-i - 1])
-            children.append(*born_children)
+            born_children = Chromosome.crossover((mating_pool[i], mating_pool[-i - 1],))
+            children.extend(born_children)
 
     return children
 
@@ -93,7 +107,7 @@ def init_population(pop_size, data, heuristic_ratio=0):
 
     # Generate random solutions
     for _ in range(pop_size):
-        population.append(gen_random_chromosome(data['n']))
+        population.append(gen_random_chromosome(data))
 
     # Set first bit
     ids = random.sample(range(pop_size), heuristic_solutions_number)
@@ -105,9 +119,13 @@ def init_population(pop_size, data, heuristic_ratio=0):
     for idx in ids:
         population[idx][-1] = 0
 
+    for chromo in population:
+        chromo.repair()
+        chromo.calc_fitness()
+
     return population
 
 
-def gen_random_chromosome(size) -> Chromosome:
-    return Chromosome([random.randint(0, 1) for _ in range(size)])
+def gen_random_chromosome(data) -> Chromosome:
+    return Chromosome([random.randint(0, 1) for _ in range(data['n'])], data)
 
