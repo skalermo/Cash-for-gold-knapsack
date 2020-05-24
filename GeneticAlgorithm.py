@@ -91,34 +91,20 @@ def mutate_chromosomes(chromosomes, mutation_rate):
             chromosome.mutate()
 
 
-def init_population(pop_size, data, heuristic_ratio=0):
+def init_population(pop_size, data):
     """
     Populate the initial population
     with random solutions.
-    Heuristic ratio defines how many chromosomes have first bit set.
-    Half of that amount also have last bit unset.
     :param pop_size: Size of population
     :param data: Input data
-    :param heuristic_ratio: Heuristic solutions/all solutions
     :return: Initialized population
     """
 
-    heuristic_solutions_number = int(heuristic_ratio * pop_size)
     population = []
 
     # Generate random solutions
     for _ in range(pop_size):
         population.append(gen_random_chromosome(data))
-
-    # Set first bit
-    ids = random.sample(range(pop_size), heuristic_solutions_number)
-    for idx in ids:
-        population[idx][0] = 1
-
-    # Unset last bit
-    ids = random.sample(range(pop_size), heuristic_solutions_number//2)
-    for idx in ids:
-        population[idx][-1] = 0
 
     for chromo in population:
         chromo.repair(mode='random')
