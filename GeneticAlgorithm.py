@@ -3,7 +3,7 @@ from datetime import datetime
 from Chromosome import Chromosome
 
 
-def genetic_algorithm(data, generations, pop_size=100, crossover_rate=0.65, mutation_rate=0.05, seed=None):
+def genetic_algorithm(data, pop_size=100, crossover_rate=0.65, mutation_rate=0.05, seed=None):
     # Set seed
     if seed is None:
         seed = datetime.now().microsecond
@@ -12,15 +12,16 @@ def genetic_algorithm(data, generations, pop_size=100, crossover_rate=0.65, muta
     # Initialize population
     population = init_population(pop_size, data)
 
-    progress = [population[0].fitness]
-    progress_avg = [sum(chromo.fitness for chromo in population) / len(population)]
+    progress = population[0].fitness
+    progress_avg = sum(chromo.fitness for chromo in population) / len(population)
+    yield population, progress, progress_avg
 
-    for i in range(generations):
+    while True:
         population = next_generation(data, population, crossover_rate, mutation_rate)
-        progress.append(population[0].fitness)
-        progress_avg.append(sum(chromo.fitness for chromo in population) / len(population))
+        progress = population[0].fitness
+        progress_avg = sum(chromo.fitness for chromo in population) / len(population)
 
-    return population[0], progress, progress_avg
+        yield population, progress, progress_avg
 
 
 def next_generation(data, population, crossover_rate=0.65, mutation_rate=0.05, elite_size=1):
@@ -33,10 +34,10 @@ def next_generation(data, population, crossover_rate=0.65, mutation_rate=0.05, e
     new_individuals = parents + children
     mutate_chromosomes(new_individuals, mutation_rate)
 
-    repair_chromosomes(new_individuals)
+    # repair_chromosomes(new_individuals)
 
     # Sort chromosomes by their fitness
-    new_population = sorted(new_individuals, key=lambda x: x.calc_fitness(), reverse=True)
+    new_population = sorted(new_individuals, key=lambda x: x.get_fitness(True), reverse=True)
 
     # Truncate new population size and return new population
     return new_population[:len(population)]
@@ -120,8 +121,8 @@ def init_population(pop_size, data, heuristic_ratio=0):
         population[idx][-1] = 0
 
     for chromo in population:
-        chromo.repair()
-        chromo.calc_fitness()
+        chromo.repair(mode='random')
+        chromo.get_fitness()
 
     return population
 
