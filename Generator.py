@@ -61,11 +61,10 @@ def gen_data(n: int = 100,
     elif correlation == 'strong':
         profits = [round(r + weights[i], 1) for i in range(n)]
 
-    # sort profits and weights by p/w ratio
-    profits, weights = (list(t) for t in zip(*sorted(zip(profits, weights),
-                                                     key=lambda tup: tup[0]/tup[1], reverse=True)))
-
     ratios = [p/w for w, p in zip(weights, profits)]
+
+    # get sorted by p/w ratio indices
+    sorted_indices = [i[0] for i in sorted(enumerate(ratios), key=lambda x: x[1], reverse=True)]
 
     if capacity is None:
         capacity = {
@@ -80,6 +79,7 @@ def gen_data(n: int = 100,
         'weights': weights,
         'profits': profits,
         'ratios': ratios,
+        'sorted_indices': sorted_indices,
         'capacity': capacity,
         'capacity_type': capacity_type,
         'correlation': correlation,
