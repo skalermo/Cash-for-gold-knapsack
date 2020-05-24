@@ -15,6 +15,15 @@ class TestGenerator(TestCase):
         data2 = gen_data(seed=random_seed)
         self.assertEqual(data1, data2)
 
+    def test_machine_independent_seed(self):
+        data = {'n': 5,
+                'weights': [6.8, 1.2, 3.5, 3.0, 7.6],
+                'profits': [8.6, 5.1, 2.7, 0.20000000000000018, 7.699999999999999],
+                'ratios': [1.2647058823529411, 4.25, 0.7714285714285715, 0.06666666666666672, 1.013157894736842],
+                'sorted_indices': [1, 0, 4, 2, 3], 'capacity': 20, 'capacity_type': 'restrictive', 'correlation': 'weak',
+                'seed': 42}
+        self.assertEqual(data, gen_data(n=5, seed=42))
+
     def test_gen_data_not_none(self):
         data = gen_data()
         self.assertTrue(all([value is not None for _, value in data.items()]))
