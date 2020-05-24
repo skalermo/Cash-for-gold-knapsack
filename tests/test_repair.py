@@ -23,11 +23,9 @@ class TestRepairChromosome(unittest.TestCase):
         self.assertLessEqual(weight_sum, data['capacity'])
 
     def test_greedy_repair(self):
-        data = gen_data(capacity=1, seed=0)
-        population = init_population(1, data)
-        c = population[0]
-        weight_sum = sum([c.gene[i] * data['weights'][i] for i in range(len(c.gene))])
-        self.assertGreater(weight_sum, data['capacity'])
+        data = gen_data(n=10, capacity=1, seed=0)
+        c = Chromosome([1]*10, data)
+        self.assertGreater(c.weight_sum, data['capacity'])
 
         copied = c.copy()
         c.repair()

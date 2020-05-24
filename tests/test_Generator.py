@@ -76,4 +76,5 @@ class TestGenerator(TestCase):
 
     def test_gen_data_if_sorted(self):
         data = gen_data()
-        self.assertTrue(all(data['ratios'][i] >= data['ratios'][i+1] for i in range(data['n']-1)))
+        self.assertTrue(all(data['ratios'][i] >= data['ratios'][j] for i, j in
+                            zip(data['sorted_indices'][:-2], data['sorted_indices'][:-1])))
