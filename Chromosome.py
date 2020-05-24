@@ -50,7 +50,7 @@ class Chromosome:
         return Chromosome(self.gene.copy(), self.data)
 
     @staticmethod
-    def crossover(parents, seed=None, point=None):
+    def crossover(parents, seed=None, method='point', point=None):
         """
         Single point crossover.
         Produce two offsprings, each carrying some genetic information from both parents.
@@ -59,9 +59,11 @@ class Chromosome:
 
         :param parents: Chromosome pair
         :param seed:    Random seed
+        :param method   One-point or swap methods
         :param point:   Crossover point
         :return:        2 children
         """
+
         x, y = parents
         data = None
         if x.data:
@@ -73,21 +75,23 @@ class Chromosome:
             seed = datetime.now().microsecond
         random.seed(seed)
 
-        # Choose crossover point
-        if point is None:
-            point = random.randint(0, len(x) - 1)
+        if method == 'point':
+            # Choose crossover point
+            if point is None:
+                point = random.randint(0, len(x) - 1)
 
-        # Cross genes
-        # child1 = x[:point] + y[point:]
-        # child2 = y[:point] + x[point:]
+            # Cross genes
+            child1 = x[:point] + y[point:]
+            child2 = y[:point] + x[point:]
 
-        # Alternative crossover: choose random bits and swap 'em
-        child1 = x[:]
-        child2 = y[:]
-        k = random.randint(1, data['n']//2)
-        genes_to_swap = random.sample(range(data['n']), k)
-        for i in genes_to_swap:
-            child1[i], child2[i] = child2[i], child1[i]
+        if method == 'swap':
+            # Alternative crossover: choose random bits and swap 'em
+            child1 = x[:]
+            child2 = y[:]
+            k = random.randint(1, data['n']//2)
+            genes_to_swap = random.sample(range(data['n']), k)
+            for i in genes_to_swap:
+                child1[i], child2[i] = child2[i], child1[i]
 
         return Chromosome(child1, data), Chromosome(child2, data)
 
