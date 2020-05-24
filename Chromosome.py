@@ -6,13 +6,14 @@ import itertools
 
 class Chromosome:
 
-    def __init__(self, gene, data):
+    def __init__(self, gene, data=None):
         # always set data, unless running in tests
 
         self.gene = gene
         self.fitness = float('-inf')
         self.data = data
-        self.weight_sum = sum(itertools.compress(data['weights'], self.gene))
+        if data:
+            self.weight_sum = sum(itertools.compress(data['weights'], self.gene))
 
     def __setitem__(self, key, value):
         self.gene[key] = value
@@ -32,19 +33,18 @@ class Chromosome:
         Inplace operation.
         There are two modes: greedy and random.
         """
-        if self.weight_sum <= self.data['capacity']:
-            return
+        assert mode in ['greedy', 'random']
+        i = idx = 0
 
-        knapsack_overfilled = True
-        i = 0
-        while knapsack_overfilled:
+        while self.is_overfilled():
+            i -= 1
+            if mode == 'random':
+                idx = i
             if mode == 'greedy':
-                i -= 1
-                self.weight_sum -= self.data['weights'][i] * self.gene[i]
-                self.gene[i] = 0
+                idx = self.data['sorted_indices'][i]
 
-            if self.weight_sum <= self.data['capacity']:
-                return
+            self.weight_sum -= self.data['weights'][idx] * self.gene[idx]
+            self.gene[idx] = 0
 
     def copy(self):
         return Chromosome(self.gene.copy(), self.data)
@@ -63,7 +63,9 @@ class Chromosome:
         :return:        2 children
         """
         x, y = parents
-        data = x.data
+        data = None
+        if x.data:
+            data = x.data
         x, y = x.gene, y.gene
 
         # Set seed
@@ -76,16 +78,16 @@ class Chromosome:
             point = random.randint(0, len(x) - 1)
 
         # Cross genes
-        child1 = x[:point] + y[point:]
-        child2 = y[:point] + x[point:]
+        # child1 = x[:point] + y[point:]
+        # child2 = y[:point] + x[point:]
 
         # Alternative crossover: choose random bits and swap 'em
-        # child1 = x[:]
-        # child2 = y[:]
-        # k = random.randint(data['n']//4, data['n']//2)
-        # genes_to_swap = random.sample(range(data['n']), k)
-        # for i in genes_to_swap:
-        #     child1[i], child2[i] = child2[i], child1[i]
+        child1 = x[:]
+        child2 = y[:]
+        k = random.randint(1, data['n']//2)
+        genes_to_swap = random.sample(range(data['n']), k)
+        for i in genes_to_swap:
+            child1[i], child2[i] = child2[i], child1[i]
 
         return Chromosome(child1, data), Chromosome(child2, data)
 
@@ -118,14 +120,14 @@ class Chromosome:
         if has_penalty:
             if self.weight_sum > self.data['capacity']:
                 # Get p = max(P[i] / W[i])
-                p = self.data['ratios'][0]
+                p = self.data['ratios'][self.data['sorted_indices'][0]]
 
                 # Find sum_diff = sum(x[i] * W[i]) - C
                 sum_diff = self.weight_sum - self.data['capacity']
 
                 # Set penalty
-                # penalty = np.log2(1 + p * sum_diff) <- fails
-                penalty = p * sum_diff
+                penalty = np.log2(1 + p * sum_diff)
+                # penalty = (p * sum_diff)**2
 
         # Find fitness = sum(x[i] * P[i] - Penalty(x))
         self.fitness = sum(itertools.compress(self.data['profits'], self.gene)) - penalty
