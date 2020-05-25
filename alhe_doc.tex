@@ -18,6 +18,8 @@
 % for advanced math formulas
 \usepackage{mathtools}
 
+\usepackage{listings}
+
 % links
 \usepackage{hyperref}
 \hypersetup{
@@ -92,9 +94,9 @@ Na potrzeby projektu generowano instancje problemu plecakowego w sposób opisany
 
 Rozróżnia się instancje, gdzie wagi i  zyski są: 
 \begin{itemize}
-  \item nieskorelowane -- współczynnik korelacji w przybliżeniu równy 0,
-  \item skorelowane słabo -- współczynnik korelacji w przedziale (0, 1),
-  \item skorelowane mocno -- współczynnik korelacji równy 1.
+  \item \textbf{nieskorelowane} -- współczynnik korelacji w przybliżeniu równy 0,
+  \item \textbf{skorelowane słabo} -- współczynnik korelacji w przedziale (0, 1),
+  \item \textbf{skorelowane mocno} -- współczynnik korelacji równy 1.
 \end{itemize}
 
 Większa korelacja, jak wspomniano w artykule, implikuje większą trudność problemu.
@@ -151,8 +153,8 @@ Zwrócimy uwagę, że dane skorelowane \say{słabo} mają współczynnik korelac
 
 W artykule opisano 2 typy pojemności:
 \begin{itemize}
-  \item Ograniczona -- $2v$, gdzie $v$ jest wartością maksymalną wag.
-  \item Średnia  -- równa połowie sumy wszystkich wag.
+  \item \textbf{Ograniczona} -- $2v$, gdzie $v$ jest wartością maksymalną wag.
+  \item \textbf{Rozszerzona}  -- równa połowie sumy wszystkich wag.
 \end{itemize}
 
 Nasz generator umożliwia również ustawienie pojemności wybranej arbitralnie przez użytkownika.
@@ -233,7 +235,7 @@ Wyróżniamy następujące komponenty zaimplementowanych algorytmów genetycznyc
 
 \end{enumerate}
 
-Każdy z tych komponentów postaramy się szczegółowo opisać.
+Każdy z tych komponentów postaramy się opisać.
 
 \subsubsection{Populacja początkowa}
 
@@ -246,16 +248,15 @@ Po tych czynnościach populacja jest gotowa do wejścia do pętli głównej algo
 
 \subsubsection{Selekcja do krzyżowania}
 
-Zgodnie z artykułem zaimplentowaliśmy selekcję turniejową. W każdym turnieju uczęstniczy 2 osobników. Ponieważ przy utworzeniu nowej populacji osobniki zostają posortowane wg. jakości, wystarczy porównać ich indeksy aby wyznaczyć zwyciężcę turnieju.
+Zgodnie z artykułem zaimplentowaliśmy \textbf{selekcję turniejową}. W każdym turnieju uczęstniczy \textbf{2 osobników}. Ponieważ przy utworzeniu nowej populacji osobniki zostają posortowane wg. jakości, wystarczy porównać ich indeksy aby wyznaczyć zwyciężcę turnieju.
 
 \subsubsection{Krzyżowanie}
 
-Zaimplementowaliśmy krzyżowanie jednopunktowe, używane w artykule.
-Dodaliśmy też krzyżowanie wymiejające: losuje się $k$ indeksów, gdzie $k \in (1.. \left\lfloor \dfrac{N}{2} \right\rfloor)$. Dla każdego indeksu robimy zamianę genów osobników.
+Zaimplementowaliśmy \textbf{krzyżowanie jednopunktowe}, używane w artykule.
 
 W wyniku tej operacji powstają dwa nowe osobniki z przeliczonymi wartościami jakości.
 
-Współczynnik krzyżowania odpowiada za to jak często stosowane jest krzyżowanie: np. dla współczynnika równego 1 krzyżujemy zawsze, dla 0.5 -- w przybliżeniu w połowie przypadków, dla 0 -- nigdy nie krzyżujemy.
+\textbf{Współczynnik krzyżowania} odpowiada za to jak często stosowane jest krzyżowanie: np. dla współczynnika równego 1 krzyżujemy zawsze, dla 0.5 -- w przybliżeniu w połowie przypadków, dla 0 -- nigdy nie krzyżujemy.
 
 \subsubsection{Mutacja}
 
@@ -263,7 +264,7 @@ Odwrócenie wybranego bitu.
 
 Każdy bit dowolnego osobnika może zostać zmutowany, niezależnie od tego, czy dany osobnik został wybrany do krzyżowania, czy nie.
 
-Współczynnik mutacji odpowiada za to, jak często mutujemy bity.
+\textbf{Współczynnik mutacji} odpowiada za to, jak często mutujemy bity.
 
 \subsubsection{Selekcja do następnej populacji}
 
@@ -273,9 +274,9 @@ Wszystkie osobniki zostają posortowane malejąco wg. posiadanej jakości. W prz
 
 W tym rozdziale porównamy działanie algorytmów. 
 
-Do porównania: algorytm genetyczny zwykły, bez modyfikacji (\emph{vanilla}), algorytm genetyczny z logarytmiczną funkcją kary (\emph{penalty}), algorytm genetyczny z zachłannym naprawianiem osobników (\emph{repair}).
+Do porównania: algorytm genetyczny zwykły bez modyfikacji (\emph{vanilla}), algorytm genetyczny z logarytmiczną funkcją kary (\emph{penalty}), algorytm genetyczny z zachłannym naprawianiem osobników (\emph{repair}).
 
-Wydajność algorytmu oceniamy na podstawie najlepszej uzyskanej wartości jakości w ciągu 500 generacji. Współczynniki krzyżowania i mutacji są stałe i wynoszą 0.65 i 0.05 odpowiednio. Różnica między naszym eksperymentem a przedstawionym w artykule jest taka, że dla rozszerzonej pojemności plecaka nie jesteśmy w stanie sprawdzić czy znalezione rozwiązania jest optymalne. Także dla algorytmu z funkcją kary po zakończeniu algorytmu rozwiązania często przekraczają pojemność plecaka, dla tego jednorazowo naprawiamy je zachłannie. W tabeli poniżej przedstawiamy uzyskane rezultaty (dokładniejszy przebieg eksperymentu można znaleźć w logach eksperymentu).
+Wydajność algorytmu oceniamy na podstawie najlepszej uzyskanej wartości jakości w ciągu 500 generacji. Współczynniki krzyżowania i mutacji są stałe i wynoszą 0.65 i 0.05 odpowiednio. Różnica między naszym eksperymentem a przedstawionym w artykule jest taka, że dla rozszerzonej pojemności plecaka nie jesteśmy w stanie sprawdzić czy znalezione rozwiązania są optymalne. Także dla algorytmu z funkcją kary po zakończeniu algorytmu rozwiązania często przekraczają pojemność plecaka, dla tego jednorazowo naprawiamy je zachłannie. W tabeli poniżej przedstawiamy uzyskane rezultaty (dokładniejszy przebieg eksperymentu można znaleźć w logach).
 
 \pagebreak
 
@@ -310,6 +311,7 @@ strong & 100 & c1 & 59.7 (85.0) & \textbf{85.0 (85.0)} & 84.9 (85.0) \\
 \end{table}
 
 W nawiasach jest podane rozwiązanie optymalne lub "-" gdy nie znamy go.
+Wartości pogrubione świadczą o tym, że albo została osiągnięta wartość optymalna, albo dana wartość jest największa spośród innych.
 \medbreak
 
 \textbf{Wnioski}
@@ -320,7 +322,9 @@ Dla danych o ograniczonej pojemności plecaka algorytm z naprawianiem ma wyraźn
 
 Dla danych o rozszerzonej pojemności plecaka niestety nie znaliśmy rozwiązania optymalnego. Rezultaty działania różnią się od przedstawionych w artykule: algorytm z naprawianiem pokazuje lepsze wyniki, ale nie dla wszystkich danych wejściowych.
 
-Dobrze widać, że standardowy algorytm genetyczny bez modyfikacji pokazuje gorsze wyniki, niż jego modyfikacje.
+Widać, że standardowy algorytm genetyczny bez modyfikacji pokazuje gorsze wyniki, niż jego modyfikacje. Nasze oczekiwania odnośnie tego się sprawdziły. Możemy uznać, że cel projektu został osiągnięty.
+
+\pagebreak
 
 \subsection{Opis funkcjonalny}
 
@@ -336,9 +340,11 @@ Projekt składa się z kilku plików .py, które zawierają najistotniejsze komp
 
 \item \textbf{Experiments.py} - w pliku algorytmy zostają uruchomione dla różnych zestawów danych wejściowych. Wszystkie wyniki są zapisywane w folderze \emph{logs/}
 
-\item \textbf{Generator.py} - generowanie danych syntetycznych, które przekazywane są badanym algorytmom. Można ustawiać korelacje generowanych danych, zakres danych, pojemność bądź typ pojemności plecaka, liczbę elementów w plecaku oraz ziarno losowości.
+\item \textbf{Generator.py} - generowanie danych syntetycznych, które przekazywane są badanym algorytmom. Można ustawiać korelacje generowanych danych, zakres danych, pojemność bądź typ pojemności plecaka, liczbę elementów w plecaku oraz ziarno losowości. Bezpośrednio uruchamiając ten plik można zapisać wygenerowane dane do pliku.
 
 \item \textbf{GeneticAlgorithm.py} - metody algorytmu genetycznego, w tym inicjalizacja populacji, selekcja, naprawianie populacji, stworzenie następnej populacji itp.
+
+\item \textbf{main.py} - przeznaczony do uruchamiania algorytmów. Podając argumenty użytkownik może wybrany algorytm oraz plik z danymi wejściowymi. O tym jak korzystać z programu napisano w rozdziale \emph{Uruchamianie}. 
 
 \end{itemize}
 
@@ -348,6 +354,68 @@ Do folderu \textbf{logs/} zapisywany jest wyniki eksperymentu opisanego w pliku 
 liczba elementów w plecaku, typ pojemności, korelacja, wybrany algorytm.
 
 W folderze \textbf{img/} przechowywane są obrazki wykorzystane w dokumentacji. 
+
+\pagebreak
+
+\subsection{Uruchamianie}
+
+Program main.py pozwala na rozwiązanie problemu algorytmami:
+
+\begin{itemize}
+
+\item Branch and Bound
+
+\item Genetyczny
+
+\end{itemize}
+
+Program \textbf{main.py} może wygenerować dane testowe sam, lub wczytać je z pliku:
+    
+\begin{lstlisting}
+    python main -i plik.json bnb -d 10
+    
+\end{lstlisting}
+\smallbreak
+
+Wygenerować dane można programem \textbf{Generator.py}.
+
+\begin{lstlisting}
+    python Generator.py -o plik.json  
+        
+\end{lstlisting}
+\smallbreak
+
+Aby uruchomić program z algorytmem Branch and Bound należy:
+
+\begin{lstlisting}
+    python main.py bnb -d 10
+
+\end{lstlisting}
+\smallbreak
+
+Argument \textbf{-d} pozwala na wybranie głebokości przeglądania drzewa w algorytmie BnB.
+
+Aby uruchomić program z algorytmem Genetycznym należy:
+
+\begin{lstlisting}
+    python main.py genetic -m method
+    
+\end{lstlisting}
+\smallbreak
+
+Gdzie \textbf{method} należy wybrać opcję \textbf{vanilla}, \textbf{repair} lub \textbf{penalty}.
+
+\smallbreak
+
+Więcej informacji o argumentach do programu można znaleźć uruchamiając:
+
+\begin{lstlisting}
+    python main.py -h           Argumenty generatora
+    python main.py bnb -h       Argumenty algorytmy Branch and Bound
+    python main.py genetic -h   Argumenty algorytmu Genetycznego
+
+\end{lstlisting}
+
 
 \pagebreak
 
