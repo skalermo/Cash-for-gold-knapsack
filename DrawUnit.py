@@ -44,8 +44,10 @@ class DrawUnit:
         if self.mode == 'data' and self.data is None:
             mode = 'roulette'
 
-        if mode == 'simple':
-            return 1/(n+i)
+        if mode == 'equal':
+            return 1/n
+        if mode == 'pow_of_2':
+            return 1/2**(i+1)
         if mode == 'roulette':
             return 2*(n-i)/(n*(n+1))
         if mode == 'data':
