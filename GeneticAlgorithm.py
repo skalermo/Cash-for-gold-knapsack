@@ -23,7 +23,7 @@ def next_generation(population, method, crossover_rate=0.65,
                     mutation_rate=0.05, elite_size=1):
 
     # Select and breed parents
-    parents = selection(population, elite_size, len(population)//2)
+    parents = selection(population, elite_size, len(population))
     children = breed(parents, crossover_rate)
 
     # Mutate parents and children
@@ -99,8 +99,9 @@ def breed(mating_pool, crossover_rate):
 
 def mutate_chromosomes(chromosomes, mutation_rate):
     for chromosome in chromosomes:
-        if random.random() < mutation_rate:
-            chromosome.mutate()
+        for i in range(len(chromosome)):
+            if random.random() < mutation_rate:
+                chromosome.mutate(i)
 
 
 def init_population(pop_size, data, method):
