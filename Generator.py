@@ -1,3 +1,5 @@
+import argparse
+import json
 import random
 from datetime import datetime
 
@@ -103,3 +105,39 @@ def _weak_corr_profits(n: int, r: float, weights: list) -> list:
             profit = weights[i] + round(random.uniform(-r, r), 1)
         profits.append(profit)
     return profits
+
+if __name__ == '__main__':
+    # Parser for generator
+    parser = argparse.ArgumentParser(prog='Generator.py', description='Generator for Knapsack 0/1')
+    parser.add_argument('-o', '--file', type=str, default=None, metavar='', help='Data file')
+    parser.add_argument('-s', '--seed', type=float, default=None, metavar='', help='Seed for generator')
+    parser.add_argument('-n', '--items', type=int, default=100, metavar='', help='Number of items')
+    parser.add_argument('-v', '--weight', type=int, default=10, metavar='', help='Weight cap')
+    parser.add_argument('-r', '--value', type=int, default=5, metavar='', help='Correlation value')
+    parser.add_argument('-p', '--correlation', type=str, default='weak', metavar='',
+                        help='Correlation between profits and weights (none, weak, strong)')
+    parser.add_argument('-c', '--type', type=str, default='average', metavar='',
+                        help='Capacity type (restrictive, average, custom: number)')
+
+    args = parser.parse_args()
+
+    # Set seed
+    seed = args.seed
+
+    # Prepare args for generator
+    if args.type.isnumeric():
+        capacity = int(args.type)
+        capacity_type = 'custom'
+    else:
+        capacity = None
+        capacity_type = args.type.lower()
+
+    gen_args = (args.items, args.weight, args.value, args.correlation, capacity, capacity_type, seed)
+
+    # Generate data
+    data = gen_data(*gen_args)
+
+    if args.file is None:
+        print(data)
+    else:
+        json.dump(data, open(args.file, 'w'), indent=4)
