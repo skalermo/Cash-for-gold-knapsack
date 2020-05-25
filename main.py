@@ -1,4 +1,6 @@
 import argparse
+import json
+
 from BNBAlgorithm import knapsack
 from GeneticAlgorithm import genetic_algorithm
 from Generator import gen_data
@@ -35,6 +37,7 @@ algorithms = {
 if __name__ == '__main__':
     # Parser for generator
     parser = argparse.ArgumentParser(prog='main.py', description='Knapsack 0/1 (Cash for Gold)')
+    parser.add_argument('-i', '--file', type=str, default=None, metavar='', help='Data file')
     parser.add_argument('-s', '--seed', type=float, default=None, metavar='', help='Seed for generator')
     parser.add_argument('-n', '--items', type=int, default=100, metavar='', help='Number of items')
     parser.add_argument('-v', '--weight', type=int, default=10, metavar='', help='Weight cap')
@@ -71,18 +74,25 @@ if __name__ == '__main__':
     # Set seed
     seed = args.seed
 
-    # Prepare args for generator
-    if args.type.isnumeric():
-        capacity = int(args.type)
-        capacity_type = 'custom'
+    if args.file is None:
+        # Prepare args for generator
+        if args.type.isnumeric():
+            capacity = int(args.type)
+            capacity_type = 'custom'
+        else:
+            capacity = None
+            capacity_type = args.type.lower()
+
+        gen_args = (args.items, args.weight, args.value, args.correlation, capacity, capacity_type, seed)
+
+        # Generate data
+        data = gen_data(*gen_args)
     else:
-        capacity = None
-        capacity_type = args.type.lower()
-
-    gen_args = (args.items, args.weight, args.value, args.correlation, capacity, capacity_type, seed)
-
-    # Generate data
-    data = gen_data(*gen_args)
+        try:
+            data = json.load(open(args.file, 'r'))
+        except FileNotFoundError:
+            print('File {} not found'.format(args.file))
+            exit(0)
 
     # Start algorithm
     if algorithm == 'bnb':
