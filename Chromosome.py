@@ -93,12 +93,11 @@ class Chromosome:
 
         return Chromosome(child1, data), Chromosome(child2, data)
 
-    def mutate(self):
+    def mutate(self, idx):
         """
-        Select and flip random bit in chromosome
+        Flip bit in chromosome
         """
 
-        idx = random.randint(0, len(self.gene) - 1)
         self.weight_sum -= self.data['weights'][idx] * self.gene[idx]
         self.gene[idx] = 1 - self.gene[idx]
         self.weight_sum += self.data['weights'][idx] * self.gene[idx]
