@@ -15,6 +15,9 @@
 % change title of the bibliography
 \def\bibname{Referencje}\let\refname\bibname
 
+% for advanced math formulas
+\usepackage{mathtools}
+
 % links
 \usepackage{hyperref}
 \hypersetup{
@@ -28,6 +31,9 @@
 % image displaying
 \usepackage{subcaption}
 \usepackage{graphicx}
+
+\usepackage{multirow} 
+\usepackage{makecell}
 
 \title{Dokumentacja do projektu z ALHE}
 
@@ -151,26 +157,184 @@ W artykule opisano 2 typy pojemności:
 
 Nasz generator umożliwia również ustawienie pojemności wybranej arbitralnie przez użytkownika.
 
+\
+
+Dla wygody posługiwania dodaliśmy też listę indeksów do elementów posortowanej wg. stosunku zysk/waga tablicy. Nie wpływa to w żaden sposób na rozwój osobników w naszych algorytmach, w dodatek przyspiesza naprawianie zachłanne.
+
 \subsection{Branch-and-Bound}
 
+Metoda przeglądu drzewa przestrzeni rozwiązań z heurystycznym odcinaniem gałęzi, które nie mają rozwiązania optymalnego.
+Nasza implementacja wykorzystuje przegląd drzewa wgłąb.
 
-%\subsection{Dane wejściowe}
+\subsubsection{Wykorzystanie zasobów czasowych i pamięciowych}
 
-%Na potrzeby eksperymentów dane wejśiowe będą generowane losowo.
-%Wprowadzimy słabą korelację (tak jak opisano w artykule) między wagami a zyskami:
+Przedstawimy kilka wykresów opisujących zależność czasu trwania algorytmu od liczby elementów w plecaku przy różnych korelacji i pojemności.
 
-%\medskip
-%$W[i] := (uniformly)$ random$([1..v])$
+\medskip
 
-%$P[i] := W[i] + (uniformly)$ random$([-r..r])$, 
-%\medskip
+Rysunek 2 dobrze opisuje jak bardzo czas trwania algorytmu zależy od korelacji danych i typu pojemności plecaka. Dla każdego punktu na wykresie algorytm został odpalony 5 razy i został zachowany czas uśredniony. 
 
-%gdzie \textbf{$W$} i \textbf{$P$} są wektorami wag oraz zysków odpowiednio, $v, r \in \mathbb{R^+}$.
+\medskip
 
-%Jeśli, dla pewnych $i$, $P[i]\leq 0$, taka wartość zysku zostanie zignorowana i wylosowana ponownie, aż $P[i] > 0$.
-%\medskip
+Jak widać dla \textbf{słabej korelacji} i ograniczonej pojemności algorytm działa bardzo szybko (mniej niż 1 sekunda). Tak się dzieje dla tego, że ograniczona pojemność pozwala algorytmowi dość często odrzucać gałęzie drzewa. 
 
-%Także będzie możliwość podania przez użytkownika danych wejściowych jako plik.
+\medskip
+
+Dla \textbf{silnej korelacji} czas trwania jest rzędu dziesiątek sekund, czasami sięga kilku minut.
+
+\medskip
+
+Dla \textbf{powiększonej pojemności} plecaka wykres czasu trwania zaczyna przypominać funkcję wykładniczą. Także zauważyliśmy wykorzystanie przez algorytm zbyt dużej ilości pamięci (czasami system operacyjny zabijał program) dla tego postanowiliśmy nie kontynuować pomiaru czasu dla większych wartości.
+
+\begin{figure}[h]
+  \centering
+\begin{subfigure}{0.5\textwidth}
+  \includegraphics[width=\linewidth]{img/bnb_weakcorr_restrcap_500.png}
+  \caption{}
+  \label{}
+\end{subfigure}\hfil
+\begin{subfigure}{0.5\textwidth}
+  \includegraphics[width=\linewidth]{img/bnb_strongcorr_restrcap_350.png}
+  \caption{}
+  \label{}
+\end{subfigure}
+
+\medskip
+\begin{subfigure}{0.5\textwidth}
+  \includegraphics[width=\linewidth]{img/bnb_weakcorr_avgcap_45.png}
+  \caption{}
+  \label{}
+\end{subfigure}
+
+\caption{Wykresy zależności czasu działania algorytmu od liczby elementów w plecaku przy różnych właściwościach zbioru: (a) słaba korelacja i ograniczona pojemność plecaka; (b) silna korelacja i ograniczona pojemność plecaka; (c) słaba korelacja i rozszerzona pojemność.}
+
+\end{figure}
+
+\subsubsection{Wykorzystanie algorytmu w projekcie}
+
+Czas trwania i pochłanianie pamięci robią algorytm bardzo nieatrakcyjny. Spróbowaliśmy nawet zmodyfikować algorytm tak, aby nie zagłębiał się niżej określonego poziomu. To rzeczywiście przyspieszyło jego działanie, ale zwracane przez algorytm wartości stały się bardzo odległe od wartości optymalnej, co robi modyfikację niezbyt efektywną. Z tego powodu postanowiliśmy zrezygnować z użycia tego algorytmu w przypadku rozszerzonej pojemności plecaka.
+\pagebreak
+
+\subsection{Algorytm genetyczny}
+
+Wyróżniamy następujące komponenty zaimplementowanych algorytmów genetycznych (różnice między algorytmami opiszemy w odpowiednich podrozdziałach każdego z komponentów):
+
+\begin{enumerate}
+
+\item Stworzenie populacji początkowej
+
+\item Selekcja osobników do krzyżowania
+
+\item Krzyżowanie
+
+\item Mutacja
+
+\item Selekcja osobników do utworzenia następnej populacji
+
+\end{enumerate}
+
+Każdy z tych komponentów postaramy się szczegółowo opisać.
+
+\subsubsection{Populacja początkowa}
+
+Inicjalizacja populacji początkowej odbywa się w ten sposób, że dla każdego nowego osobnika losowana jest lista zer i jedynek.
+
+Na koniec dla każdego osobnika populacji wyliczana jest jakość (fitness).
+W przypadku algorytmu z funkcją kary, osobniki nie są naprawiane, natomiast fitness jakość uwzględnia karę. Dla pozostałych algorytmów osobniki przy przekroczeniu pojemności plecaka zostają naprawione naprawianiem losowym.
+
+Po tych czynnościach populacja jest gotowa do wejścia do pętli głównej algorytmu.
+
+\subsubsection{Selekcja do krzyżowania}
+
+Zgodnie z artykułem zaimplentowaliśmy selekcję turniejową. W każdym turnieju uczęstniczy 2 osobników. Ponieważ przy utworzeniu nowej populacji osobniki zostają posortowane wg. jakości, wystarczy porównać ich indeksy aby wyznaczyć zwyciężcę turnieju.
+
+\subsubsection{Krzyżowanie}
+
+Zaimplementowaliśmy krzyżowanie jednopunktowe, używane w artykule.
+Dodaliśmy też krzyżowanie wymiejające: losuje się $k$ indeksów, gdzie $k \in (1.. \left\lfloor \dfrac{N}{2} \right\rfloor)$. Dla każdego indeksu robimy zamianę genów osobników.
+
+W wyniku tej operacji powstają dwa nowe osobniki z przeliczonymi wartościami jakości.
+
+Współczynnik krzyżowania odpowiada za to jak często stosowane jest krzyżowanie: np. dla współczynnika równego 1 krzyżujemy zawsze, dla 0.5 -- w przybliżeniu w połowie przypadków, dla 0 -- nigdy nie krzyżujemy.
+
+\subsubsection{Mutacja}
+
+Odwrócenie wybranego bitu.
+
+Każdy bit dowolnego osobnika może zostać zmutowany, niezależnie od tego, czy dany osobnik został wybrany do krzyżowania, czy nie.
+
+Współczynnik mutacji odpowiada za to, jak często mutujemy bity.
+
+\subsubsection{Selekcja do następnej populacji}
+
+Wszystkie osobniki zostają posortowane malejąco wg. posiadanej jakości. W przypadku algorytmu bez modyfikacji osobniki przekraczające pojemność plecaka zostają zastąpione wylosowanymi na nowo, które już spełniają ten warunek.
+
+\subsection{Porównanie algorytmów}
+
+W tym rozdziale porównamy działanie algorytmów. 
+
+Do porównania: algorytm genetyczny zwykły, bez modyfikacji (\emph{vanilla}), algorytm genetyczny z logarytmiczną funkcją kary (\emph{penalty}), algorytm genetyczny z zachłannym naprawianiem osobników (\emph{repair}).
+
+Wydajność algorytmu oceniamy na podstawie najlepszej uzyskanej wartości jakości w ciągu 500 generacji. Współczynniki krzyżowania i mutacji są stałe i wynoszą 0.65 i 0.05 odpowiednio. Różnica między naszym eksperymentem a przedstawionym w artykule jest taka, że dla rozszerzonej pojemności plecaka nie jesteśmy w stanie sprawdzić czy znalezione rozwiązania jest optymalne. Także dla algorytmu z funkcją kary po zakończeniu algorytmu rozwiązania często przekraczają pojemność plecaka, dla tego jednorazowo naprawiamy je zachłannie. W tabeli poniżej przedstawiamy uzyskane rezultaty (dokładniejszy przebieg eksperymentu można znaleźć w logach projektu).
+
+\pagebreak
+
+\begin{table}[]
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\multirow{2}{*}{Correl.} &
+  \multirow{2}{*}{\begin{tabular}[c]{@{}c@{}}No. of\\ items\end{tabular}} &
+  \multirow{2}{*}{\begin{tabular}[c]{@{}c@{}}Cap.\\ type\end{tabular}} &
+  \multicolumn{3}{c|}{Algorithm} \\ \cline{4-6} 
+       &     &    & vanilla & repair & penalty \\ \hline
+none   & 100 & c1 & 49.5 (89.9) & 89.9 (89.9) & 87.0 (89.9)\\
+       &     & c2 & 349.9 (-) & 389.4 (-) & 390.4 (-) \\
+       & 250 & c1 & 56.3 (105.0) & 105.0 (105.0) & 102.2 (105.0) \\
+       &     & c2 & 846.0 (-) & 959.5 (-) & 954.7 (-) \\
+       & 500 & c1 & 35.8 (124.9) & 124.9 (124.9) & 120.6 (124.9) \\
+       &     & c2 & 1573.3 (-) & 1726.1 (-) & 1735.4 (-)\\ \hline
+weak   & 100 & c1 & 36.9 (54.5) & 54.5 (54.5) & 54.5 (54.5) \\
+       &     & c2 & 362.5 (-) & 394.5 (-) & 398.9 (-) \\
+       & 250 & c1 & 35.8 (63.6) & 63.6 (63.6) & 61.2 (63.6) \\
+       &     & c2 & 826.5 (-) & 934.3 (-) & 934.5 (-) \\
+       & 500 & c1 & 33.0 (79.8) &  (79.8)       &         \\
+       &     & c2 &         &        &         \\ \hline
+strong & 100 & c1 &         &        &         \\
+       &     & c2 &         &        &         \\
+       & 250 & c1 &         &        &         \\
+       &     & c2 &         &        &         \\
+       & 500 & c1 &         &        &         \\
+       &     & c2 &         &        &         \\ \hline
+\end{tabular}
+\end{table}
+
+
+\subsection{Opis funkcjonalny}
+
+Projekt składa się z kilku plików .py, które zawierają najistotniejsze komponenty projektu:
+
+\begin{itemize}
+
+\item \textbf{BNBAlgorithm.py} - implementacja algorytmu Branch-and-Bound
+
+\item \textbf{Chromosome.py} - plik zawierający klasę \emph{Chromosome}, oraz dotyczące jej metody. W tym pliku znajdują się implementacje funkcji do naprawiania osobników, mutacji, krzyżowania oraz wyliczenia jakości z uwzględnieniem kary.
+
+\item \textbf{DrawUnit.py} - plik zawierający metody do wizualizacji populacji osobników. Zrezygnowano z korzystania z nich, ponieważ dość trudno interpretować powstające obrazki.
+
+\item \textbf{Experiments.py} - w pliku algorytmy zostają uruchomione dla różnych zestawów danych wejściowych. Wszystkie wyniki są zapisywane w folderze \emph{logs/}
+
+\item \textbf{Generator.py} - generowanie danych syntetycznych, które przekazywane są badanym algorytmom. Można ustawiać korelacje generowanych danych, zakres danych, pojemność bądź typ pojemności plecaka, liczbę elementów w plecaku oraz ziarno losowości.
+
+\item \textbf{GeneticAlgorithm.py} - metody algorytmu genetycznego, w tym inicjalizacja populacji, selekcja, naprawianie populacji, stworzenie następnej populacji itp.
+
+\end{itemize}
+
+W folderze \textbf{tests/} znajdują się testy jednostkowe, dla poszczególnych metod programu.
+
+Do folderu \textbf{logs/} zapisywany jest wyniki eksperymentu opisanego w pliku \emph{Experiments.py}. Każdy plik logu zawiera przebieg ewolucji populacji (jakość najlepszą, oraz jakość uśrednioną), a także parametry wywołania instancji algorytmu. Nazwa logu opisuje parametry wywołania:
+liczba elementów w plecaku, typ pojemności, korelacja, wybrany algorytm.
+
+W folderze \textbf{img/} przechowywane są obrazki wykorzystane w dokumentacji. 
 
 \pagebreak
 
